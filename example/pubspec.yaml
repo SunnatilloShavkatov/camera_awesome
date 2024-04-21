@@ -9,14 +9,14 @@ environment:
 
 dependencies:
   better_open_file: ^3.6.5
+  camera_awesome:
+    path: ../
   cross_file: ^0.3.4+1
   flutter:
     sdk: flutter
-  camera_awesome:
-    path: ../
   path_provider: ^2.1.3
-  google_mlkit_face_detection: ^0.9.0
   google_mlkit_barcode_scanning: ^0.10.0
+  google_mlkit_face_detection: ^0.9.0
   google_mlkit_text_recognition: ^0.11.0
   image: ^4.1.7
   meta: any
