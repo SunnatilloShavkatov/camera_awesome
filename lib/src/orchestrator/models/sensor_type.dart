@@ -1,4 +1,3 @@
-// ignore_for_file: flutter_style_todos
 enum SensorType {
   /// A built-in wide-angle camera.
   ///
@@ -22,14 +21,6 @@ enum SensorType {
 }
 
 class SensorTypeDevice {
-
-  SensorTypeDevice({
-    required this.sensorType,
-    required this.name,
-    required this.iso,
-    required this.flashAvailable,
-    required this.uid,
-  });
   final SensorType sensorType;
 
   /// A localized device name for display in the user interface.
@@ -43,6 +34,14 @@ class SensorTypeDevice {
 
   /// An identifier that uniquely identifies the device.
   final String uid;
+
+  SensorTypeDevice({
+    required this.sensorType,
+    required this.name,
+    required this.iso,
+    required this.flashAvailable,
+    required this.uid,
+  });
 }
 
 // TODO: instead of storing SensorTypeDevice values,
@@ -53,13 +52,6 @@ class SensorTypeDevice {
 // List<SensorTypeDevice> ultraWideAngle;
 
 class SensorDeviceData {
-
-  SensorDeviceData({
-    this.wideAngle,
-    this.ultraWideAngle,
-    this.telephoto,
-    this.trueDepth,
-  });
   /// A built-in wide-angle camera.
   ///
   /// The wide angle sensor is the default sensor for iOS
@@ -76,20 +68,29 @@ class SensorDeviceData {
   /// iOS only
   SensorTypeDevice? trueDepth;
 
-  List<SensorTypeDevice> get availableSensors => <SensorTypeDevice?>[
+  SensorDeviceData({
+    this.wideAngle,
+    this.ultraWideAngle,
+    this.telephoto,
+    this.trueDepth,
+  });
+
+  List<SensorTypeDevice> get availableSensors {
+    return [
       wideAngle,
       ultraWideAngle,
       telephoto,
       trueDepth,
-    ].where((SensorTypeDevice? element) => element != null).cast<SensorTypeDevice>().toList();
+    ].where((element) => element != null).cast<SensorTypeDevice>().toList();
+  }
 
-  int get availableBackSensors => <SensorTypeDevice?>[
+  int get availableBackSensors => [
         wideAngle,
         ultraWideAngle,
         telephoto,
-      ].where((SensorTypeDevice? element) => element != null).length;
+      ].where((element) => element != null).length;
 
-  int get availableFrontSensors => <SensorTypeDevice?>[
+  int get availableFrontSensors => [
         trueDepth,
-      ].where((SensorTypeDevice? element) => element != null).length;
+      ].where((element) => element != null).length;
 }

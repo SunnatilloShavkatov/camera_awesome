@@ -1,7 +1,5 @@
-// ignore_for_file: use_if_null_to_convert_nulls_to_bools
-
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:flutter/foundation.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:flutter/foundation.dart';
 
 enum MediaCaptureStatus {
   capturing,
@@ -18,6 +16,11 @@ enum VideoState {
 }
 
 class MediaCapture {
+  final Exception? exception;
+  final CaptureRequest captureRequest;
+  final MediaCaptureStatus status;
+  final VideoState? videoState;
+
   MediaCapture.capturing({
     this.exception,
     required this.captureRequest,
@@ -35,10 +38,6 @@ class MediaCapture {
     required this.captureRequest,
   })  : status = MediaCaptureStatus.failure,
         videoState = VideoState.error;
-  final Exception? exception;
-  final CaptureRequest captureRequest;
-  final MediaCaptureStatus status;
-  final VideoState? videoState;
 
   /// Returns true if the capture has either a mimeType with "image" inside or
   /// if the file path ends with "jpg".
@@ -46,10 +45,10 @@ class MediaCapture {
   bool get isPicture => kIsWeb
       ? true
       : captureRequest.when(
-          single: (SingleCaptureRequest singleCaptureRequest) =>
+          single: (singleCaptureRequest) =>
               singleCaptureRequest.file?.path.endsWith("jpg") == true ||
               singleCaptureRequest.file?.mimeType?.contains("image") == true,
-          multiple: (MultipleCaptureRequest multipleCaptureRequest) =>
+          multiple: (multipleCaptureRequest) =>
               multipleCaptureRequest.fileBySensor.values.first?.path
                       .endsWith("jpg") ==
                   true ||

@@ -1,18 +1,20 @@
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:flutter/material.dart';
 
 class AwesomeOrientedWidget extends StatefulWidget {
+  final Widget child;
+  final bool rotateWithDevice;
 
   const AwesomeOrientedWidget({
     super.key,
     required this.child,
     this.rotateWithDevice = true,
   });
-  final Widget child;
-  final bool rotateWithDevice;
 
   @override
-  State<StatefulWidget> createState() => AwesomeOrientedWidgetState();
+  State<StatefulWidget> createState() {
+    return AwesomeOrientedWidgetState();
+  }
 }
 
 class AwesomeOrientedWidgetState extends State<AwesomeOrientedWidget> {
@@ -24,8 +26,8 @@ class AwesomeOrientedWidgetState extends State<AwesomeOrientedWidget> {
     if (widget.rotateWithDevice) {
       return StreamBuilder<CameraOrientations>(
         stream: CamerawesomePlugin.getNativeOrientation(),
-        builder: (_, AsyncSnapshot<CameraOrientations> orientationSnapshot) {
-          final CameraOrientations? orientation = orientationSnapshot.data;
+        builder: (_, orientationSnapshot) {
+          final orientation = orientationSnapshot.data;
           if (orientation != null && orientation != previousOrientation) {
             turns = shortestTurnsToReachTarget(
               current: turns,
@@ -66,14 +68,14 @@ class AwesomeOrientedWidgetState extends State<AwesomeOrientedWidget> {
   /// E.g: when being at 0.5 turns, should I go to 0.75 or to -0.25 to minimize
   /// the rotation ?
   double shortestTurnsToReachTarget(
-      {required double current, required double target,}) {
-    final double currentDegree = current * 360;
-    final double targetDegree = target * 360;
+      {required double current, required double target}) {
+    final currentDegree = current * 360;
+    final targetDegree = target * 360;
 
     // Determine if we need to go clockwise or counterclockwise to reach
     // the next angle with the least movements
     // See https://math.stackexchange.com/a/2898118
-    final bool clockWise = (targetDegree - currentDegree + 540) % 360 - 180 > 0;
+    final clockWise = (targetDegree - currentDegree + 540) % 360 - 180 > 0;
     double resultDegree = currentDegree;
     do {
       resultDegree += (clockWise ? 1 : -1) * 360 / 4;

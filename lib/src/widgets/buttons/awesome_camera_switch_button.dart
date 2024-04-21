@@ -1,10 +1,14 @@
-import "package:camera_awesome/src/orchestrator/states/camera_state.dart";
-import "package:camera_awesome/src/widgets/utils/awesome_circle_icon.dart";
-import "package:camera_awesome/src/widgets/utils/awesome_oriented_widget.dart";
-import "package:camera_awesome/src/widgets/utils/awesome_theme.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/src/orchestrator/states/camera_state.dart';
+import 'package:camera_awesome/src/widgets/utils/awesome_circle_icon.dart';
+import 'package:camera_awesome/src/widgets/utils/awesome_oriented_widget.dart';
+import 'package:camera_awesome/src/widgets/utils/awesome_theme.dart';
+import 'package:flutter/material.dart';
 
 class AwesomeCameraSwitchButton extends StatelessWidget {
+  final CameraState state;
+  final AwesomeTheme? theme;
+  final Widget Function() iconBuilder;
+  final void Function(CameraState) onSwitchTap;
 
   AwesomeCameraSwitchButton({
     super.key,
@@ -14,20 +18,18 @@ class AwesomeCameraSwitchButton extends StatelessWidget {
     void Function(CameraState)? onSwitchTap,
     double scale = 1.3,
   })  : iconBuilder = iconBuilder ??
-            (() => AwesomeCircleWidget.icon(
+            (() {
+              return AwesomeCircleWidget.icon(
                 theme: theme,
                 icon: Icons.cameraswitch,
                 scale: scale,
-              )),
-        onSwitchTap = onSwitchTap ?? ((CameraState state) => state.switchCameraSensor());
-  final CameraState state;
-  final AwesomeTheme? theme;
-  final Widget Function() iconBuilder;
-  final void Function(CameraState) onSwitchTap;
+              );
+            }),
+        onSwitchTap = onSwitchTap ?? ((state) => state.switchCameraSensor());
 
   @override
   Widget build(BuildContext context) {
-    final AwesomeTheme theme = this.theme ?? AwesomeThemeProvider.of(context).theme;
+    final theme = this.theme ?? AwesomeThemeProvider.of(context).theme;
 
     return AwesomeOrientedWidget(
       rotateWithDevice: theme.buttonTheme.rotateWithCamera,

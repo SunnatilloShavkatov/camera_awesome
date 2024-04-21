@@ -1,16 +1,15 @@
-// ignore_for_file: comment_references, only_throw_errors, flutter_style_todos
-import "dart:ui";
+import 'dart:ui';
 
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/pigeon.dart";
-import "package:camera_awesome/src/logger.dart";
-import "package:camera_awesome/src/orchestrator/camera_context.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/pigeon.dart';
+import 'package:camera_awesome/src/logger.dart';
+import 'package:camera_awesome/src/orchestrator/camera_context.dart';
 
 /// Callback to get the CaptureRequest after the video has been taken
-typedef OnVideoCallback = void Function(CaptureRequest request);
+typedef OnVideoCallback = Function(CaptureRequest request);
 
 /// Callback when video recording failed
-typedef OnVideoFailedCallback = void Function(Exception exception);
+typedef OnVideoFailedCallback = Function(Exception exception);
 
 /// When Camera is in Video mode
 class VideoRecordingCameraState extends CameraState {
@@ -29,9 +28,9 @@ class VideoRecordingCameraState extends CameraState {
 
   @override
   void setState(CaptureMode captureMode) {
-    printLog("""
+    printLog('''
       warning: You must stop recording before changing state.  
-    """);
+    ''');
   }
 
   @override
@@ -43,9 +42,8 @@ class VideoRecordingCameraState extends CameraState {
   Future<void> pauseRecording(MediaCapture currentCapture) async {
     if (!currentCapture.isVideo) {
       throw "Trying to pause a video while currentCapture is not a video (${currentCapture.captureRequest.when(
-        single: (SingleCaptureRequest single) => single.file!.path,
-        multiple: (MultipleCaptureRequest multiple) =>
-            multiple.fileBySensor.values.first!.path,
+        single: (single) => single.file!.path,
+        multiple: (multiple) => multiple.fileBySensor.values.first!.path,
       )})";
     }
     if (currentCapture.status != MediaCaptureStatus.capturing) {
@@ -53,9 +51,8 @@ class VideoRecordingCameraState extends CameraState {
     }
     await CamerawesomePlugin.pauseVideoRecording();
     _mediaCapture = MediaCapture.capturing(
-      captureRequest: currentCapture.captureRequest,
-      videoState: VideoState.paused,
-    );
+        captureRequest: currentCapture.captureRequest,
+        videoState: VideoState.paused);
   }
 
   /// Resumes a video recording.
@@ -63,9 +60,8 @@ class VideoRecordingCameraState extends CameraState {
   Future<void> resumeRecording(MediaCapture currentCapture) async {
     if (!currentCapture.isVideo) {
       throw "Trying to pause a video while currentCapture is not a video (${currentCapture.captureRequest.when(
-        single: (SingleCaptureRequest single) => single.file!.path,
-        multiple: (MultipleCaptureRequest multiple) =>
-            multiple.fileBySensor.values.first!.path,
+        single: (single) => single.file!.path,
+        multiple: (multiple) => multiple.fileBySensor.values.first!.path,
       )})";
     }
     if (currentCapture.status != MediaCaptureStatus.capturing) {
@@ -84,12 +80,11 @@ class VideoRecordingCameraState extends CameraState {
     OnVideoCallback? onVideo,
     OnVideoFailedCallback? onVideoFailed,
   }) async {
-    final MediaCapture? currentCapture =
-        cameraContext.mediaCaptureController.value;
+    var currentCapture = cameraContext.mediaCaptureController.value;
     if (currentCapture == null) {
       return;
     }
-    final bool result = await CamerawesomePlugin.stopRecordingVideo();
+    final result = await CamerawesomePlugin.stopRecordingVideo();
     if (result) {
       _mediaCapture = MediaCapture.success(
         captureRequest: currentCapture.captureRequest,
@@ -102,14 +97,14 @@ class VideoRecordingCameraState extends CameraState {
       onVideoFailed?.call(Exception("Error while stop recording"));
     }
     await CamerawesomePlugin.setCaptureMode(CaptureMode.video);
-    await cameraContext.changeState(VideoCameraState.from(cameraContext));
+    cameraContext.changeState(VideoCameraState.from(cameraContext));
   }
 
   /// If video recording should [enableAudio].
   Future<void> enableAudio(bool enableAudio) async {
-    printLog("""
+    printLog('''
       warning: EnableAudio has no effect when recording 
-    """);
+    ''');
   }
 
   /// PRIVATES
@@ -124,7 +119,7 @@ class VideoRecordingCameraState extends CameraState {
     // Nothing to do
   }
 
-  void focus() {
+  focus() {
     cameraContext.focus();
   }
 
@@ -133,11 +128,12 @@ class VideoRecordingCameraState extends CameraState {
     required PreviewSize pixelPreviewSize,
     required PreviewSize flutterPreviewSize,
     AndroidFocusSettings? androidFocusSettings,
-  }) =>
-      cameraContext.focusOnPoint(
-        flutterPosition: flutterPosition,
-        pixelPreviewSize: pixelPreviewSize,
-        flutterPreviewSize: flutterPreviewSize,
-        androidFocusSettings: androidFocusSettings,
-      );
+  }) {
+    return cameraContext.focusOnPoint(
+      flutterPosition: flutterPosition,
+      pixelPreviewSize: pixelPreviewSize,
+      flutterPreviewSize: flutterPreviewSize,
+      androidFocusSettings: androidFocusSettings,
+    );
+  }
 }

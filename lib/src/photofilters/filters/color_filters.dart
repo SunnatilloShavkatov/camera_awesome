@@ -1,7 +1,7 @@
-import "dart:typed_data";
+import 'dart:typed_data';
 
-import "package:camera_awesome/src/photofilters/filters/filters.dart";
-import "package:camera_awesome/src/photofilters/rgba_model.dart";
+import 'package:camera_awesome/src/photofilters/rgba_model.dart';
+import 'package:camera_awesome/src/photofilters/filters/filters.dart';
 
 ///The [ColorSubFilter] class is the abstract class to define any ColorSubFilter.
 abstract class ColorSubFilter extends SubFilter {
@@ -11,9 +11,10 @@ abstract class ColorSubFilter extends SubFilter {
 
 ///The [ColorFilter] class to define a Filter which will applied to each color, consists of multiple [SubFilter]s
 class ColorFilter extends Filter {
-  ColorFilter({required super.name})
-      : subFilters = <ColorSubFilter>[];
   List<ColorSubFilter> subFilters;
+  ColorFilter({required String name})
+      : subFilters = [],
+        super(name: name);
 
   @override
   void apply(Uint8List pixels, int width, int height) {
@@ -27,7 +28,7 @@ class ColorFilter extends Filter {
         // alpha: pixels[i + 3],
         alpha: 255,
       );
-      for (final ColorSubFilter subFilter in subFilters) {
+      for (ColorSubFilter subFilter in subFilters) {
         color = subFilter.applyFilter(color);
       }
       pixels[i] = color.red;

@@ -1,8 +1,8 @@
-import "package:camera_awesome/src/orchestrator/models/filters/awesome_filter.dart";
+import 'package:camera_awesome/src/orchestrator/models/filters/awesome_filter.dart';
 
 // some filters are commented because filter & preview are too different,
 // we need to adjust them
-List<AwesomeFilter> awesomePresetFiltersList = <AwesomeFilter>[
+List<AwesomeFilter> awesomePresetFiltersList = [
   AwesomeFilter.None,
   AwesomeFilter.AddictiveBlue,
   AwesomeFilter.AddictiveRed,

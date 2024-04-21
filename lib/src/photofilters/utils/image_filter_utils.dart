@@ -1,23 +1,21 @@
-import "dart:math";
-import "dart:typed_data";
+import 'dart:math';
+import 'dart:typed_data';
 
-import "package:camera_awesome/src/photofilters/utils/utils.dart";
+import 'package:camera_awesome/src/photofilters/utils/utils.dart';
 
 int clampPixel(int x) => x.clamp(0, 255);
 void saturation(Uint8List bytes, num saturation) {
   saturation = (saturation < -1) ? -1 : saturation;
   for (int i = 0; i < bytes.length; i += 4) {
-    final num r = bytes[i];
-    final num g = bytes[i + 1];
-    final num b = bytes[i + 2];
+    final num r = bytes[i], g = bytes[i + 1], b = bytes[i + 2];
     final num gray =
         0.2989 * r + 0.5870 * g + 0.1140 * b; //weights from CCIR 601 spec
     bytes[i] =
         clampPixel((-gray * saturation + bytes[i] * (1 + saturation)).round());
     bytes[i + 1] = clampPixel(
-        (-gray * saturation + bytes[i + 1] * (1 + saturation)).round(),);
+        (-gray * saturation + bytes[i + 1] * (1 + saturation)).round());
     bytes[i + 2] = clampPixel(
-        (-gray * saturation + bytes[i + 2] * (1 + saturation)).round(),);
+        (-gray * saturation + bytes[i + 2] * (1 + saturation)).round());
   }
 }
 
@@ -26,29 +24,25 @@ void hueRotation(Uint8List bytes, int degrees) {
   final double W = sin(degrees * pi / 180);
 
   for (int i = 0; i < bytes.length; i += 4) {
-    final num r = bytes[i];
-    final num g = bytes[i + 1];
-    final num b = bytes[i + 2];
+    final num r = bytes[i], g = bytes[i + 1], b = bytes[i + 2];
     bytes[i] = clampPixel(((.299 + .701 * U + .168 * W) * r +
             (.587 - .587 * U + .330 * W) * g +
             (.114 - .114 * U - .497 * W) * b)
-        .round(),);
+        .round());
     bytes[i + 1] = clampPixel(((.299 - .299 * U - .328 * W) * r +
             (.587 + .413 * U + .035 * W) * g +
             (.114 - .114 * U + .292 * W) * b)
-        .round(),);
+        .round());
     bytes[i + 2] = clampPixel(((.299 - .3 * U + 1.25 * W) * r +
             (.587 - .588 * U - 1.05 * W) * g +
             (.114 + .886 * U - .203 * W) * b)
-        .round(),);
+        .round());
   }
 }
 
 void grayscale(Uint8List bytes) {
   for (int i = 0; i < bytes.length; i += 4) {
-    final int r = bytes[i];
-    final int g = bytes[i + 1];
-    final int b = bytes[i + 2];
+    final int r = bytes[i], g = bytes[i + 1], b = bytes[i + 2];
     final int avg = clampPixel((0.2126 * r + 0.7152 * g + 0.0722 * b).round());
     bytes[i] = avg;
     bytes[i + 1] = avg;
@@ -59,18 +53,16 @@ void grayscale(Uint8List bytes) {
 // Adj is 0 (unchanged) to 1 (sepia)
 void sepia(Uint8List bytes, num adj) {
   for (int i = 0; i < bytes.length; i += 4) {
-    final int r = bytes[i];
-    final int g = bytes[i + 1];
-    final int b = bytes[i + 2];
+    final int r = bytes[i], g = bytes[i + 1], b = bytes[i + 2];
     bytes[i] = clampPixel(
         ((r * (1 - (0.607 * adj))) + (g * .769 * adj) + (b * .189 * adj))
-            .round(),);
+            .round());
     bytes[i + 1] = clampPixel(
         ((r * .349 * adj) + (g * (1 - (0.314 * adj))) + (b * .168 * adj))
-            .round(),);
+            .round());
     bytes[i + 2] = clampPixel(
         ((r * .272 * adj) + (g * .534 * adj) + (b * (1 - (0.869 * adj))))
-            .round(),);
+            .round());
   }
 }
 
@@ -97,9 +89,9 @@ void brightness(Uint8List bytes, num adj) {
 // Better result (slow) - adj should be < 1 (desaturated) to 1 (unchanged) and < 1
 void hueSaturation(Uint8List bytes, num adj) {
   for (int i = 0; i < bytes.length; i += 4) {
-    final List<num?> hsv = rgbToHsv(bytes[i], bytes[i + 1], bytes[i + 2]);
+    final hsv = rgbToHsv(bytes[i], bytes[i + 1], bytes[i + 2]);
     hsv[1] = (hsv[1] ?? 0) * adj;
-    final List<num> rgb = hsvToRgb(hsv[0]!, hsv[1]!, hsv[2]!);
+    final rgb = hsvToRgb(hsv[0]!, hsv[1]!, hsv[2]!);
     bytes[i] = clampPixel(rgb[0] as int);
     bytes[i + 1] = clampPixel(rgb[1] as int);
     bytes[i + 2] = clampPixel(rgb[2] as int);
@@ -139,8 +131,8 @@ void rgbScale(Uint8List bytes, num red, num green, num blue) {
 
 // Convolute - weights are 3x3 matrix
 void convolute(
-    Uint8List pixels, int width, int height, List<num> weights, num bias,) {
-  final Uint8List bytes = Uint8List.fromList(pixels);
+    Uint8List pixels, int width, int height, List<num> weights, num bias) {
+  final bytes = Uint8List.fromList(pixels);
   final int side = sqrt(weights.length).round();
   final int halfSide = ~~(side / 2).round() - side % 2;
   final int sw = width;
@@ -154,9 +146,7 @@ void convolute(
       final int sy = y;
       final int sx = x;
       final int dstOff = (y * w + x) * 4;
-      num r = bias;
-      num g = bias;
-      num b = bias;
+      num r = bias, g = bias, b = bias;
       for (int cy = 0; cy < side; cy++) {
         for (int cx = 0; cx < side; cx++) {
           final int scy = sy + cy - halfSide;

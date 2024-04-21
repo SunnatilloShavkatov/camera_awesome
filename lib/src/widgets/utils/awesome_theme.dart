@@ -1,21 +1,21 @@
-import "package:camera_awesome/src/widgets/utils/awesome_bouncing_widget.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/src/widgets/utils/awesome_bouncing_widget.dart';
+import 'package:flutter/material.dart';
 
 typedef ButtonBuilder = Widget Function(
   Widget child,
   VoidCallback onTap,
 );
 
-@immutable
 class AwesomeTheme {
+  final AwesomeButtonTheme buttonTheme;
+  final Color bottomActionsBackgroundColor;
+
   AwesomeTheme({
     AwesomeButtonTheme? buttonTheme,
     Color? bottomActionsBackgroundColor,
   })  : buttonTheme = buttonTheme ?? AwesomeButtonTheme(),
         bottomActionsBackgroundColor =
             bottomActionsBackgroundColor ?? Colors.black54;
-  final AwesomeButtonTheme buttonTheme;
-  final Color bottomActionsBackgroundColor;
 
   @override
   bool operator ==(Object other) =>
@@ -32,16 +32,26 @@ class AwesomeTheme {
   AwesomeTheme copyWith({
     AwesomeButtonTheme? buttonTheme,
     Color? bottomActionsBackgroundColor,
-  }) =>
-      AwesomeTheme(
-        buttonTheme: buttonTheme ?? this.buttonTheme,
-        bottomActionsBackgroundColor:
-            bottomActionsBackgroundColor ?? this.bottomActionsBackgroundColor,
-      );
+  }) {
+    return AwesomeTheme(
+      buttonTheme: buttonTheme ?? this.buttonTheme,
+      bottomActionsBackgroundColor:
+          bottomActionsBackgroundColor ?? this.bottomActionsBackgroundColor,
+    );
+  }
 }
 
-@immutable
 class AwesomeButtonTheme {
+  final Color foregroundColor;
+  final Color backgroundColor;
+  final double iconSize;
+  final EdgeInsets padding;
+  final ShapeBorder shape;
+  final bool rotateWithCamera;
+  final ButtonBuilder buttonBuilder;
+
+  static const double baseIconSize = 25;
+
   AwesomeButtonTheme({
     this.foregroundColor = Colors.white,
     this.backgroundColor = Colors.black12,
@@ -53,15 +63,6 @@ class AwesomeButtonTheme {
   }) : buttonBuilder = buttonBuilder ??
             ((Widget child, VoidCallback onTap) =>
                 AwesomeBouncingWidget(onTap: onTap, child: child));
-  final Color foregroundColor;
-  final Color backgroundColor;
-  final double iconSize;
-  final EdgeInsets padding;
-  final ShapeBorder shape;
-  final bool rotateWithCamera;
-  final ButtonBuilder buttonBuilder;
-
-  static const double baseIconSize = 25;
 
   @override
   bool operator ==(Object other) =>
@@ -95,30 +96,34 @@ class AwesomeButtonTheme {
     bool? rotateWithCamera,
     ButtonBuilder? buttonBuilder,
     double? baseIconSize,
-  }) =>
-      AwesomeButtonTheme(
-        foregroundColor: foregroundColor ?? this.foregroundColor,
-        backgroundColor: backgroundColor ?? this.backgroundColor,
-        iconSize: iconSize ?? this.iconSize,
-        padding: padding ?? this.padding,
-        shape: shape ?? this.shape,
-        rotateWithCamera: rotateWithCamera ?? this.rotateWithCamera,
-        buttonBuilder: buttonBuilder ?? this.buttonBuilder,
-      );
+  }) {
+    return AwesomeButtonTheme(
+      foregroundColor: foregroundColor ?? this.foregroundColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      iconSize: iconSize ?? this.iconSize,
+      padding: padding ?? this.padding,
+      shape: shape ?? this.shape,
+      rotateWithCamera: rotateWithCamera ?? this.rotateWithCamera,
+      buttonBuilder: buttonBuilder ?? this.buttonBuilder,
+    );
+  }
 }
 
 class AwesomeThemeProvider extends InheritedWidget {
+  final AwesomeTheme theme;
+
   AwesomeThemeProvider({
     super.key,
     AwesomeTheme? theme,
     required super.child,
   }) : theme = theme ?? AwesomeTheme();
-  final AwesomeTheme theme;
 
-  static AwesomeThemeProvider of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<AwesomeThemeProvider>()!;
+  static AwesomeThemeProvider of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AwesomeThemeProvider>()!;
+  }
 
   @override
-  bool updateShouldNotify(covariant AwesomeThemeProvider oldWidget) =>
-      theme != oldWidget.theme;
+  bool updateShouldNotify(covariant AwesomeThemeProvider oldWidget) {
+    return theme != oldWidget.theme;
+  }
 }

@@ -1,10 +1,15 @@
-import "package:camera_awesome/pigeon.dart";
-import "package:camera_awesome/src/orchestrator/models/sensors.dart";
-import "package:camera_awesome/src/widgets/preview/awesome_preview_fit.dart";
-import "package:camera_awesome/src/widgets/widgets.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/pigeon.dart';
+import 'package:camera_awesome/src/orchestrator/models/sensors.dart';
+import 'package:camera_awesome/src/widgets/preview/awesome_preview_fit.dart';
+import 'package:camera_awesome/src/widgets/widgets.dart';
+import 'package:flutter/material.dart';
 
 class AwesomeCameraFloatingPreview extends StatefulWidget {
+  final Texture texture;
+  final int index;
+  final double aspectRatio;
+  final Sensor sensor;
+  final PictureInPictureConfig pictureInPictureConfig;
 
   AwesomeCameraFloatingPreview({
     super.key,
@@ -15,11 +20,6 @@ class AwesomeCameraFloatingPreview extends StatefulWidget {
     PictureInPictureConfig? pictureInPictureConfig,
   }) : pictureInPictureConfig =
             pictureInPictureConfig ?? PictureInPictureConfig(sensor: sensor);
-  final Texture texture;
-  final int index;
-  final double aspectRatio;
-  final Sensor sensor;
-  final PictureInPictureConfig pictureInPictureConfig;
 
   @override
   State<AwesomeCameraFloatingPreview> createState() =>
@@ -37,16 +37,17 @@ class _AwesomeCameraFloatingPreviewState
   }
 
   @override
-  Widget build(BuildContext context) => Positioned(
+  Widget build(BuildContext context) {
+    return Positioned(
       left: _position.dx,
       top: _position.dy,
       child: AwesomeBouncingWidget(
-        // TODOWe can tap behind the preview with the current AwesomeBouncingWidget implementation
+        // TODO We can tap behind the preview with the current AwesomeBouncingWidget implementation
         onTap: widget.pictureInPictureConfig.onTap,
-        disabledOpacity: 1,
+        disabledOpacity: 1.0,
         child: GestureDetector(
           onPanUpdate: widget.pictureInPictureConfig.isDraggable
-              ? (DragUpdateDetails details) {
+              ? (details) {
                   setState(() {
                     _position = Offset(
                       _position.dx + details.delta.dx,
@@ -69,8 +70,9 @@ class _AwesomeCameraFloatingPreviewState
                 sensor: widget.sensor,
                 child: widget.texture,
               ),
-              widget.aspectRatio,),
+              widget.aspectRatio),
         ),
       ),
     );
+  }
 }

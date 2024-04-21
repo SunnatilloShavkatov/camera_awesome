@@ -1,9 +1,9 @@
-import "dart:ui";
+import 'dart:ui';
 
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/pigeon.dart";
-import "package:camera_awesome/src/orchestrator/camera_context.dart";
-import "package:collection/collection.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/pigeon.dart';
+import 'package:camera_awesome/src/orchestrator/camera_context.dart';
+import 'package:collection/collection.dart';
 
 /// When Camera is in Video mode
 class VideoCameraState extends CameraState {
@@ -34,24 +34,26 @@ class VideoCameraState extends CameraState {
   /// You can listen to [cameraSetup.mediaCaptureStream] to get updates
   /// of the photo capture (capturing, success/failure)
   Future<CaptureRequest> startRecording() async {
-    final CaptureRequest captureRequest =
+    CaptureRequest captureRequest =
         await filePathBuilder(sensorConfig.sensors.whereNotNull().toList());
     _mediaCapture = MediaCapture.capturing(
-        captureRequest: captureRequest, videoState: VideoState.started,);
+        captureRequest: captureRequest, videoState: VideoState.started);
     try {
       await CamerawesomePlugin.recordVideo(captureRequest);
     } on Exception catch (e) {
       _mediaCapture =
           MediaCapture.failure(captureRequest: captureRequest, exception: e);
     }
-    await cameraContext.changeState(VideoRecordingCameraState.from(cameraContext));
+    cameraContext.changeState(VideoRecordingCameraState.from(cameraContext));
     return captureRequest;
   }
 
   /// If the video recording should [enableAudio].
   /// This method applies to the next recording. If a recording is ongoing, it will not be affected.
-  // TODOAdd ability to mute temporarly a video recording
-  Future<void> enableAudio(bool enableAudio) => CamerawesomePlugin.setAudioMode(enableAudio);
+  // TODO Add ability to mute temporarly a video recording
+  Future<void> enableAudio(bool enableAudio) {
+    return CamerawesomePlugin.setAudioMode(enableAudio);
+  }
 
   /// PRIVATES
 
@@ -66,7 +68,7 @@ class VideoCameraState extends CameraState {
     // Nothing to do
   }
 
-  void focus() {
+  focus() {
     cameraContext.focus();
   }
 
@@ -75,10 +77,12 @@ class VideoCameraState extends CameraState {
     required PreviewSize pixelPreviewSize,
     required PreviewSize flutterPreviewSize,
     AndroidFocusSettings? androidFocusSettings,
-  }) => cameraContext.focusOnPoint(
+  }) {
+    return cameraContext.focusOnPoint(
       flutterPosition: flutterPosition,
       pixelPreviewSize: pixelPreviewSize,
       flutterPreviewSize: flutterPreviewSize,
       androidFocusSettings: androidFocusSettings,
     );
+  }
 }

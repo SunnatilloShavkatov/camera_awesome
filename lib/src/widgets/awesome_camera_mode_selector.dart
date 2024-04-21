@@ -1,20 +1,20 @@
-import "package:camera_awesome/src/orchestrator/models/capture_modes.dart";
-import "package:camera_awesome/src/orchestrator/states/states.dart";
-import "package:camera_awesome/src/widgets/utils/awesome_bouncing_widget.dart";
-import "package:camera_awesome/src/widgets/utils/awesome_theme.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/src/orchestrator/models/capture_modes.dart';
+import 'package:camera_awesome/src/orchestrator/states/states.dart';
+import 'package:camera_awesome/src/widgets/utils/awesome_bouncing_widget.dart';
+import 'package:camera_awesome/src/widgets/utils/awesome_theme.dart';
+import 'package:flutter/material.dart';
 
 class AwesomeCameraModeSelector extends StatelessWidget {
+  final CameraState state;
 
   const AwesomeCameraModeSelector({
     super.key,
     required this.state,
   });
-  final CameraState state;
 
   @override
   Widget build(BuildContext context) {
-    final AwesomeTheme theme = AwesomeThemeProvider.of(context).theme;
+    final theme = AwesomeThemeProvider.of(context).theme;
     Widget content;
     if (state is VideoRecordingCameraState || state.saveConfig == null) {
       content = const SizedBox(
@@ -24,7 +24,7 @@ class AwesomeCameraModeSelector extends StatelessWidget {
       content = CameraModePager(
         initialMode: state.captureMode,
         availableModes: state.saveConfig!.captureModes,
-        onChangeCameraRequest: (CaptureMode mode) {
+        onChangeCameraRequest: (mode) {
           state.setState(mode);
         },
       );
@@ -40,6 +40,10 @@ class AwesomeCameraModeSelector extends StatelessWidget {
 typedef OnChangeCameraRequest = Function(CaptureMode mode);
 
 class CameraModePager extends StatefulWidget {
+  final OnChangeCameraRequest onChangeCameraRequest;
+
+  final List<CaptureMode> availableModes;
+  final CaptureMode? initialMode;
 
   const CameraModePager({
     super.key,
@@ -47,10 +51,6 @@ class CameraModePager extends StatefulWidget {
     required this.availableModes,
     required this.initialMode,
   });
-  final OnChangeCameraRequest onChangeCameraRequest;
-
-  final List<CaptureMode> availableModes;
-  final CaptureMode? initialMode;
 
   @override
   State<CameraModePager> createState() => _CameraModePagerState();
@@ -83,22 +83,23 @@ class _CameraModePagerState extends State<CameraModePager> {
       return const SizedBox.shrink();
     }
     return Row(
-      children: <Widget>[
+      children: [
         Expanded(
           child: SizedBox(
             height: 32,
             child: PageView.builder(
+              scrollDirection: Axis.horizontal,
               controller: _pageController,
-              onPageChanged: (int index) {
-                final CaptureMode cameraMode = widget.availableModes[index];
+              onPageChanged: (index) {
+                final cameraMode = widget.availableModes[index];
                 widget.onChangeCameraRequest(cameraMode);
                 setState(() {
                   _index = index;
                 });
               },
               itemCount: widget.availableModes.length,
-              itemBuilder: (BuildContext context, int index) {
-                final CaptureMode cameraMode = widget.availableModes[index];
+              itemBuilder: ((context, index) {
+                final cameraMode = widget.availableModes[index];
                 return AnimatedOpacity(
                   duration: const Duration(milliseconds: 300),
                   opacity: index == _index ? 1 : 0.2,
@@ -111,10 +112,11 @@ class _CameraModePagerState extends State<CameraModePager> {
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            shadows: <Shadow>[
+                            shadows: [
                               Shadow(
                                 blurRadius: 4,
-                              ),
+                                color: Colors.black,
+                              )
                             ],
                           ),
                         ),
@@ -129,10 +131,10 @@ class _CameraModePagerState extends State<CameraModePager> {
                     },
                   ),
                 );
-              },
+              }),
             ),
           ),
-        ),
+        )
       ],
     );
   }

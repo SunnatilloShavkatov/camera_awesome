@@ -1,14 +1,15 @@
-import "dart:io";
+import 'dart:io';
 
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 class AwesomeFocusIndicator extends StatelessWidget {
-
-  const AwesomeFocusIndicator({super.key, required this.position});
   final Offset position;
 
+  const AwesomeFocusIndicator({super.key, required this.position});
+
   @override
-  Widget build(BuildContext context) => IgnorePointer(
+  Widget build(BuildContext context) {
+    return IgnorePointer(
       child: TweenAnimationBuilder<double>(
         key: ValueKey(position),
         tween: Tween<double>(
@@ -17,30 +18,33 @@ class AwesomeFocusIndicator extends StatelessWidget {
         ),
         duration: const Duration(milliseconds: 2000),
         curve: Curves.fastLinearToSlowEaseIn,
-        builder: (_, double anim, Widget? child) => CustomPaint(
+        builder: (_, anim, child) {
+          return CustomPaint(
             painter: AwesomeFocusPainter(
               tapPosition: position,
               rectSize: anim,
             ),
-          ),
+          );
+        },
       ),
     );
+  }
 }
 
 class AwesomeFocusPainter extends CustomPainter {
-
-  AwesomeFocusPainter({required this.tapPosition, required this.rectSize});
   final double rectSize;
   final Offset tapPosition;
 
+  AwesomeFocusPainter({required this.tapPosition, required this.rectSize});
+
   @override
   void paint(Canvas canvas, Size size) {
-    final bool isIOS = Platform.isIOS;
+    final isIOS = Platform.isIOS;
 
-    final double baseX = tapPosition.dx - rectSize / 2;
-    final double baseY = tapPosition.dy - rectSize / 2;
+    final baseX = tapPosition.dx - rectSize / 2;
+    final baseY = tapPosition.dy - rectSize / 2;
 
-    final Path pathAndroid = Path()
+    Path pathAndroid = Path()
       ..moveTo(baseX, baseY)
       ..lineTo(baseX + rectSize / 5, baseY)
       ..moveTo(baseX + 4 * rectSize / 5, baseY)
@@ -55,7 +59,7 @@ class AwesomeFocusPainter extends CustomPainter {
       ..moveTo(baseX, baseY + rectSize / 5)
       ..lineTo(baseX, baseY);
 
-    final Path pathIOS = Path()
+    Path pathIOS = Path()
       ..moveTo(baseX, baseY)
       ..lineTo(baseX + rectSize / 2, baseY)
       ..lineTo(baseX + rectSize / 2, baseY + rectSize / 10)
@@ -86,6 +90,8 @@ class AwesomeFocusPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant AwesomeFocusPainter oldDelegate) => rectSize != oldDelegate.rectSize ||
+  bool shouldRepaint(covariant AwesomeFocusPainter oldDelegate) {
+    return rectSize != oldDelegate.rectSize ||
         tapPosition != oldDelegate.tapPosition;
+  }
 }

@@ -1,12 +1,19 @@
-// ignore_for_file: unawaited_futures
+import 'dart:async';
+import 'dart:io';
 
-import "dart:async";
-import "dart:io";
-
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/src/logger.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/src/logger.dart';
 
 class AnalysisController {
+  final OnImageForAnalysis? onImageListener;
+
+  final Stream<Map<String, dynamic>>? _images$;
+
+  final AnalysisConfig conf;
+
+  StreamSubscription? imageSubscription;
+
+  bool _analysisEnabled;
 
   AnalysisController._({
     required Stream<Map<String, dynamic>>? images$,
@@ -26,15 +33,6 @@ class AnalysisController {
         images$: CamerawesomePlugin.listenCameraImages(),
         analysisEnabled: conf?.autoStart ?? true,
       );
-  final OnImageForAnalysis? onImageListener;
-
-  final Stream<Map<String, dynamic>>? _images$;
-
-  final AnalysisConfig conf;
-
-  StreamSubscription? imageSubscription;
-
-  bool _analysisEnabled;
 
   Future<void> setup() async {
     if (onImageListener == null) {
@@ -42,13 +40,15 @@ class AnalysisController {
       return;
     }
     if (imageSubscription != null) {
-      printLog("AnalysisController controller already started");
+      printLog('AnalysisController controller already started');
       return;
     }
 
     if (Platform.isIOS) {
       await CamerawesomePlugin.setupAnalysis(
         format: conf.cupertinoOptions.outputFormat,
+        // TODO Can't set width on iOS
+        width: 0,
         maxFramesPerSecond: conf.maxFramesPerSecond,
         autoStart: conf.autoStart,
       );
@@ -67,7 +67,7 @@ class AnalysisController {
     printLog("...AnalysisController setup");
   }
 
-  bool get enabled => onImageListener != null && _analysisEnabled;
+  get enabled => onImageListener != null && _analysisEnabled;
 
   // this should not return a bool but just throw an exception if something goes wrong
   Future<bool> start() async {
@@ -75,7 +75,7 @@ class AnalysisController {
       return false;
     }
     await CamerawesomePlugin.startAnalysis();
-    imageSubscription = _images$?.listen((Map<String, dynamic> event) async {
+    imageSubscription = _images$?.listen((event) async {
       await onImageListener!(AnalysisImage.from(event));
       await CamerawesomePlugin.receivedImageFromStream();
     });

@@ -1,5 +1,5 @@
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/src/orchestrator/camera_context.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/src/orchestrator/camera_context.dart';
 
 enum CaptureMode {
   photo,
@@ -18,6 +18,6 @@ enum CaptureMode {
     } else if (this == CaptureMode.analysis_only) {
       return AnalysisCameraState(cameraContext: cameraContext);
     }
-    throw ArgumentError("State not recognized");
+    throw "State not recognized";
   }
 }

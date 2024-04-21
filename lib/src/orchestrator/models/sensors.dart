@@ -1,4 +1,4 @@
-import "package:camera_awesome/camerawesome_plugin.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
 
 enum CameraAspectRatios {
   ratio_16_9,
@@ -14,6 +14,9 @@ enum SensorPosition {
 }
 
 class Sensor {
+  SensorPosition? position;
+  SensorType? type;
+  String? deviceId;
 
   Sensor._({
     this.position,
@@ -35,7 +38,4 @@ class Sensor {
       : this._(
           deviceId: deviceId,
         );
-  SensorPosition? position;
-  SensorType? type;
-  String? deviceId;
 }

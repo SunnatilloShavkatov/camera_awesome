@@ -1,48 +1,52 @@
-// ignore_for_file: public_member_api_docs, discarded_futures, flutter_style_todos
-import "dart:async";
-import "dart:io";
+import 'dart:async';
+import 'dart:io';
 
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/pigeon.dart";
-import "package:camera_awesome/src/orchestrator/exceptions/camera_states_exceptions.dart";
-import "package:camera_awesome/src/orchestrator/models/camera_physical_button.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/pigeon.dart';
+import 'package:camera_awesome/src/orchestrator/camera_context.dart';
+import 'package:camera_awesome/src/orchestrator/exceptions/camera_states_exceptions.dart';
+import 'package:camera_awesome/src/orchestrator/models/camera_physical_button.dart';
 
 /// When is not ready
 class PreparingCameraState extends CameraState {
-  PreparingCameraState(
-    super.cameraContext,
-    this.nextCaptureMode, {
-    this.onPermissionsResult,
-  });
-
   /// this is the next state we are preparing to
   final CaptureMode nextCaptureMode;
 
   /// plugin user can execute some code once the permission has been granted
   final OnPermissionsResult? onPermissionsResult;
 
+  PreparingCameraState(
+    CameraContext cameraContext,
+    this.nextCaptureMode, {
+    this.onPermissionsResult,
+  }) : super(cameraContext);
+
   @override
   CaptureMode? get captureMode => null;
 
   Future<void> start() async {
-    final AwesomeFilter? filter = cameraContext.filterController.valueOrNull;
+    final filter = cameraContext.filterController.valueOrNull;
     if (filter != null) {
       await setFilter(filter);
     }
     switch (nextCaptureMode) {
       case CaptureMode.photo:
         await _startPhotoMode();
+        break;
       case CaptureMode.video:
         await _startVideoMode();
+        break;
       case CaptureMode.preview:
         await _startPreviewMode();
+        break;
       case CaptureMode.analysis_only:
         await _startAnalysisMode();
+        break;
     }
     await cameraContext.analysisController?.setup();
     if (nextCaptureMode == CaptureMode.analysis_only) {
       // Analysis controller needs to be setup before going to AnalysisCameraState
-      await cameraContext.changeState(AnalysisCameraState.from(cameraContext));
+      cameraContext.changeState(AnalysisCameraState.from(cameraContext));
     }
 
     if (cameraContext.enablePhysicalButton) {
@@ -66,7 +70,7 @@ class PreparingCameraState extends CameraState {
     if (Platform.isAndroid) {
       _permissionStreamSub =
           CamerawesomePlugin.listenPermissionResult()!.listen(
-        (bool res) {
+        (res) {
           if (res && !_isReady) {
             _init(
               enableImageStream: enableImageStream,
@@ -79,24 +83,23 @@ class PreparingCameraState extends CameraState {
         },
       );
     }
-    final List<CamerAwesomePermission>? grantedPermissions =
+    final grantedPermissions =
         await CamerawesomePlugin.checkAndRequestPermissions(
       cameraContext.exifPreferences.saveGPSLocation,
+      checkCameraPermissions: true,
       checkMicrophonePermissions:
           cameraContext.initialCaptureMode == CaptureMode.video,
     );
     if (cameraContext.exifPreferences.saveGPSLocation &&
-        !(grantedPermissions?.contains(CamerAwesomePermission.location) ??
-            false)) {
+        !(grantedPermissions?.contains(CamerAwesomePermission.location) ==
+            true)) {
       cameraContext.exifPreferences = ExifPreferences(saveGPSLocation: false);
-      cameraContext.state.when(
-          onPhotoMode: (PhotoCameraState pm) =>
-              pm.shouldSaveGpsLocation(false));
+      cameraContext.state
+          .when(onPhotoMode: (pm) => pm.shouldSaveGpsLocation(false));
     }
     if (onPermissionsResult != null) {
-      onPermissionsResult?.call(
-        grantedPermissions?.hasRequiredPermissions() ?? false,
-      );
+      onPermissionsResult!(
+          grantedPermissions?.hasRequiredPermissions() == true);
     }
   }
 
@@ -104,14 +107,13 @@ class PreparingCameraState extends CameraState {
     _physicalButtonStreamSub?.cancel();
     _physicalButtonStreamSub =
         CamerawesomePlugin.listenPhysicalButton()!.listen(
-      (CameraPhysicalButton res) async {
+      (res) async {
         if (res == CameraPhysicalButton.volume_down ||
             res == CameraPhysicalButton.volume_up) {
           cameraContext.state.when(
-            onPhotoMode: (PhotoCameraState pm) => pm.takePhoto(),
-            onVideoMode: (VideoCameraState vm) => vm.startRecording(),
-            onVideoRecordingMode: (VideoRecordingCameraState vrm) =>
-                vrm.stopRecording(),
+            onPhotoMode: (pm) => pm.takePhoto(),
+            onVideoMode: (vm) => vm.startRecording(),
+            onVideoRecordingMode: (vrm) => vrm.stopRecording(),
           );
         }
       },
@@ -122,7 +124,7 @@ class PreparingCameraState extends CameraState {
   void setState(CaptureMode captureMode) {
     throw CameraNotReadyException(
       message:
-          """You can't change current state while camera is in PreparingCameraState""",
+          '''You can't change current state while camera is in PreparingCameraState''',
     );
   }
 
@@ -130,41 +132,41 @@ class PreparingCameraState extends CameraState {
   // PRIVATES
   /////////////////////////////////////
 
-  Future<bool> _startVideoMode() async {
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+  Future _startVideoMode() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
     );
-    await cameraContext.changeState(VideoCameraState.from(cameraContext));
+    cameraContext.changeState(VideoCameraState.from(cameraContext));
 
     return CamerawesomePlugin.start();
   }
 
-  Future<bool> _startPhotoMode() async {
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+  Future _startPhotoMode() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
     );
-    await cameraContext.changeState(PhotoCameraState.from(cameraContext));
+    cameraContext.changeState(PhotoCameraState.from(cameraContext));
 
     return CamerawesomePlugin.start();
   }
 
-  Future<bool> _startPreviewMode() async {
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+  Future _startPreviewMode() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
     );
-    await cameraContext.changeState(PreviewCameraState.from(cameraContext));
+    cameraContext.changeState(PreviewCameraState.from(cameraContext));
 
     return CamerawesomePlugin.start();
   }
 
-  Future<bool> _startAnalysisMode() async {
-    await Future<bool>.delayed(const Duration(milliseconds: 500));
+  Future _startAnalysisMode() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
@@ -175,7 +177,6 @@ class PreparingCameraState extends CameraState {
     if (Platform.isIOS) {
       return CamerawesomePlugin.start();
     }
-    return true;
   }
 
   bool _isReady = false;
@@ -185,7 +186,7 @@ class PreparingCameraState extends CameraState {
     required bool enableImageStream,
     required bool enablePhysicalButton,
   }) async {
-    await initPermissions(
+    initPermissions(
       sensorConfig,
       enableImageStream: enableImageStream,
       enablePhysicalButton: enablePhysicalButton,

@@ -1,20 +1,6 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 class AnimatedClipRect extends StatefulWidget {
-
-  const AnimatedClipRect({
-    super.key,
-    required this.child,
-    required this.open,
-    this.horizontalAnimation = true,
-    this.verticalAnimation = true,
-    this.alignment = Alignment.center,
-    this.duration = const Duration(milliseconds: 500),
-    this.reverseDuration,
-    this.curve = Curves.linear,
-    this.reverseCurve,
-    this.animationBehavior = AnimationBehavior.normal,
-  });
   @override
   AnimatedClipRectState createState() => AnimatedClipRectState();
 
@@ -30,6 +16,20 @@ class AnimatedClipRect extends StatefulWidget {
 
   ///The behavior of the controller when [AccessibilityFeatures.disableAnimations] is true.
   final AnimationBehavior animationBehavior;
+
+  const AnimatedClipRect({
+    super.key,
+    required this.child,
+    required this.open,
+    this.horizontalAnimation = true,
+    this.verticalAnimation = true,
+    this.alignment = Alignment.center,
+    this.duration = const Duration(milliseconds: 500),
+    this.reverseDuration,
+    this.curve = Curves.linear,
+    this.reverseCurve,
+    this.animationBehavior = AnimationBehavior.normal,
+  });
 }
 
 class AnimatedClipRectState extends State<AnimatedClipRect>
@@ -50,12 +50,12 @@ class AnimatedClipRectState extends State<AnimatedClipRect>
         reverseDuration: widget.reverseDuration ?? widget.duration,
         vsync: this,
         value: widget.open ? 1.0 : 0.0,
-        animationBehavior: widget.animationBehavior,);
-    _animation = Tween(begin: 0, end: 1).animate(CurvedAnimation(
+        animationBehavior: widget.animationBehavior);
+    _animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: _animationController,
       curve: widget.curve,
       reverseCurve: widget.reverseCurve ?? widget.curve,
-    ),);
+    ));
     super.initState();
   }
 
@@ -68,7 +68,7 @@ class AnimatedClipRectState extends State<AnimatedClipRect>
     return ClipRect(
       child: AnimatedBuilder(
         animation: _animationController,
-        builder: (_, Widget? child) {
+        builder: (_, child) {
           if (_animation.value == 0.0) {
             // The widget becomes invisible since it has an height/width of 0.0
             return const SizedBox.shrink();

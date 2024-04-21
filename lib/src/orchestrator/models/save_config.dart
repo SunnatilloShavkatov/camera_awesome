@@ -1,11 +1,20 @@
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/pigeon.dart";
-import "package:camera_awesome/src/orchestrator/file/builder/capture_request_builder.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/pigeon.dart';
+import 'package:camera_awesome/src/orchestrator/file/builder/capture_request_builder.dart';
 
 typedef CaptureRequestBuilder = Future<CaptureRequest> Function(
-    List<Sensor> sensors,);
+    List<Sensor> sensors);
 
 class SaveConfig {
+  final CaptureRequestBuilder? photoPathBuilder;
+  final CaptureRequestBuilder? videoPathBuilder;
+  final List<CaptureMode> captureModes;
+  final CaptureMode initialCaptureMode;
+  final VideoOptions? videoOptions;
+  final bool mirrorFrontCamera;
+
+  /// Choose if you want to persist user location in image metadata or not
+  final ExifPreferences? exifPreferences;
 
   SaveConfig._({
     this.photoPathBuilder,
@@ -24,9 +33,9 @@ class SaveConfig {
     bool mirrorFrontCamera = false,
   }) : this._(
           photoPathBuilder: pathBuilder ??
-              (List<Sensor> sensors) => AwesomeCaptureRequestBuilder()
+              (sensors) => AwesomeCaptureRequestBuilder()
                   .build(captureMode: CaptureMode.photo, sensors: sensors),
-          captureModes: <CaptureMode>[CaptureMode.photo],
+          captureModes: [CaptureMode.photo],
           initialCaptureMode: CaptureMode.photo,
           exifPreferences: exifPreferences,
           mirrorFrontCamera: mirrorFrontCamera,
@@ -39,9 +48,9 @@ class SaveConfig {
     bool mirrorFrontCamera = false,
   }) : this._(
           videoPathBuilder: pathBuilder ??
-              (List<Sensor> sensors) => AwesomeCaptureRequestBuilder()
+              (sensors) => AwesomeCaptureRequestBuilder()
                   .build(captureMode: CaptureMode.video, sensors: sensors),
-          captureModes: <CaptureMode>[CaptureMode.video],
+          captureModes: [CaptureMode.video],
           initialCaptureMode: CaptureMode.video,
           videoOptions: videoOptions,
           mirrorFrontCamera: mirrorFrontCamera,
@@ -57,24 +66,15 @@ class SaveConfig {
     bool mirrorFrontCamera = false,
   }) : this._(
           photoPathBuilder: photoPathBuilder ??
-              (List<Sensor> sensors) => AwesomeCaptureRequestBuilder()
+              (sensors) => AwesomeCaptureRequestBuilder()
                   .build(captureMode: CaptureMode.photo, sensors: sensors),
           videoPathBuilder: videoPathBuilder ??
-              (List<Sensor> sensors) => AwesomeCaptureRequestBuilder()
+              (sensors) => AwesomeCaptureRequestBuilder()
                   .build(captureMode: CaptureMode.video, sensors: sensors),
-          captureModes: <CaptureMode>[CaptureMode.photo, CaptureMode.video],
+          captureModes: [CaptureMode.photo, CaptureMode.video],
           initialCaptureMode: initialCaptureMode,
           videoOptions: videoOptions,
           exifPreferences: exifPreferences,
           mirrorFrontCamera: mirrorFrontCamera,
         );
-  final CaptureRequestBuilder? photoPathBuilder;
-  final CaptureRequestBuilder? videoPathBuilder;
-  final List<CaptureMode> captureModes;
-  final CaptureMode initialCaptureMode;
-  final VideoOptions? videoOptions;
-  final bool mirrorFrontCamera;
-
-  /// Choose if you want to persist user location in image metadata or not
-  final ExifPreferences? exifPreferences;
 }

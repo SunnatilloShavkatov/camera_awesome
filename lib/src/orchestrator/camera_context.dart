@@ -1,65 +1,17 @@
-// ignore_for_file: close_sinks, comment_references, discarded_futures
+// ignore_for_file: close_sinks
 
-import "dart:async";
-import "dart:io";
-import "dart:ui";
+import 'dart:async';
+import 'dart:io';
+import 'dart:ui';
 
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/pigeon.dart";
-import "package:rxdart/rxdart.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/pigeon.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// This class handle the current state of the camera
 /// - [PhotoCameraState]
 /// - [VideoCameraState]
 class CameraContext {
-  CameraContext._({
-    required this.initialCaptureMode,
-    required this.sensorConfigController,
-    required this.analysisController,
-    required this.saveConfig,
-    required this.exifPreferences,
-    required this.filterController,
-    required this.enablePhysicalButton,
-    required this.availableFilters,
-    this.onPermissionsResult,
-  }) {
-    final PreparingCameraState preparingState = PreparingCameraState(
-      this,
-      initialCaptureMode,
-    );
-    stateController = BehaviorSubject.seeded(preparingState);
-    filterSelectorOpened = BehaviorSubject.seeded(false);
-    mediaCaptureController = BehaviorSubject.seeded(null);
-  }
-
-  CameraContext.create(
-    SensorConfig sensorConfig, {
-    required CaptureMode initialCaptureMode,
-    OnPermissionsResult? onPermissionsResult,
-    required SaveConfig? saveConfig,
-    OnImageForAnalysis? onImageForAnalysis,
-    AnalysisConfig? analysisConfig,
-    required ExifPreferences exifPreferences,
-    required AwesomeFilter filter,
-    required bool enablePhysicalButton,
-    List<AwesomeFilter>? availableFilters,
-  }) : this._(
-          initialCaptureMode: initialCaptureMode,
-          sensorConfigController: BehaviorSubject.seeded(sensorConfig),
-          filterController: BehaviorSubject.seeded(filter),
-          enablePhysicalButton: enablePhysicalButton,
-          onPermissionsResult: onPermissionsResult,
-          saveConfig: saveConfig,
-          analysisController: onImageForAnalysis != null
-              ? AnalysisController.fromPlugin(
-                  onImageListener: onImageForAnalysis,
-                  conf: analysisConfig,
-                )
-              : null,
-          exifPreferences: exifPreferences,
-          availableFilters: availableFilters,
-        );
-
   /// Listen current state from child widgets
   late final BehaviorSubject<CameraState> stateController;
 
@@ -109,8 +61,56 @@ class CameraContext {
   /// [back] sensor frequently has flash while [front] does not for instance.
   ValueStream<SensorConfig> get sensorConfig$ => sensorConfigController.stream;
 
-  Future<void> changeState(CameraState newState) async {
-    final double currentZoom = state.sensorConfig.zoom;
+  CameraContext._({
+    required this.initialCaptureMode,
+    required this.sensorConfigController,
+    required this.analysisController,
+    required this.saveConfig,
+    required this.exifPreferences,
+    required this.filterController,
+    required this.enablePhysicalButton,
+    required this.availableFilters,
+    this.onPermissionsResult,
+  }) {
+    var preparingState = PreparingCameraState(
+      this,
+      initialCaptureMode,
+    );
+    stateController = BehaviorSubject.seeded(preparingState);
+    filterSelectorOpened = BehaviorSubject.seeded(false);
+    mediaCaptureController = BehaviorSubject.seeded(null);
+  }
+
+  CameraContext.create(
+    SensorConfig sensorConfig, {
+    required CaptureMode initialCaptureMode,
+    OnPermissionsResult? onPermissionsResult,
+    required SaveConfig? saveConfig,
+    OnImageForAnalysis? onImageForAnalysis,
+    AnalysisConfig? analysisConfig,
+    required ExifPreferences exifPreferences,
+    required AwesomeFilter filter,
+    required bool enablePhysicalButton,
+    List<AwesomeFilter>? availableFilters,
+  }) : this._(
+          initialCaptureMode: initialCaptureMode,
+          sensorConfigController: BehaviorSubject.seeded(sensorConfig),
+          filterController: BehaviorSubject.seeded(filter),
+          enablePhysicalButton: enablePhysicalButton,
+          onPermissionsResult: onPermissionsResult,
+          saveConfig: saveConfig,
+          analysisController: onImageForAnalysis != null
+              ? AnalysisController.fromPlugin(
+                  onImageListener: onImageForAnalysis,
+                  conf: analysisConfig,
+                )
+              : null,
+          exifPreferences: exifPreferences,
+          availableFilters: availableFilters,
+        );
+
+  changeState(CameraState newState) async {
+    final currentZoom = state.sensorConfig.zoom;
     state.dispose();
 
     if (state.captureMode != newState.captureMode) {
@@ -128,7 +128,7 @@ class CameraContext {
       filterController.add(AwesomeFilter.None);
       filterSelectorOpened.add(false);
     }
-    await newState.sensorConfig.setZoom(currentZoom);
+    newState.sensorConfig.setZoom(currentZoom);
   }
 
   Future<void> toggleFilterSelector() async {
@@ -151,11 +151,13 @@ class CameraContext {
     );
   }
 
-  SensorConfig get sensorConfig => sensorConfigController.value;
+  SensorConfig get sensorConfig {
+    return sensorConfigController.value;
+  }
 
-  bool get imageAnalysisEnabled => analysisController?.enabled ?? false;
+  bool get imageAnalysisEnabled => analysisController?.enabled == true;
 
-  void dispose() {
+  dispose() {
     sensorConfig.dispose();
     sensorConfigController.close();
     mediaCaptureController.close();
@@ -184,8 +186,8 @@ class CameraContext {
     AndroidFocusSettings? androidFocusSettings,
   }) async {
     if (Platform.isIOS) {
-      final double xPercentage = flutterPosition.dx / flutterPreviewSize.width;
-      final double yPercentage = flutterPosition.dy / flutterPreviewSize.height;
+      final xPercentage = flutterPosition.dx / flutterPreviewSize.width;
+      final yPercentage = flutterPosition.dy / flutterPreviewSize.height;
 
       return CamerawesomePlugin.focusOnPoint(
         position: Offset(xPercentage, yPercentage),
@@ -193,9 +195,9 @@ class CameraContext {
         androidFocusSettings: null,
       );
     } else {
-      final double ratio = pixelPreviewSize.height / flutterPreviewSize.height;
+      final ratio = pixelPreviewSize.height / flutterPreviewSize.height;
       // Transform flutter position to pixel position
-      final Offset pixelPosition = flutterPosition.scale(ratio, ratio);
+      Offset pixelPosition = flutterPosition.scale(ratio, ratio);
       return CamerawesomePlugin.focusOnPoint(
         position: pixelPosition,
         previewSize: pixelPreviewSize,
@@ -205,12 +207,16 @@ class CameraContext {
     }
   }
 
-  Future<PreviewSize> previewSize(int index) =>
-      CamerawesomePlugin.getEffectivPreviewSize(index);
+  Future<PreviewSize> previewSize(int index) {
+    return CamerawesomePlugin.getEffectivPreviewSize(index);
+  }
 
-  Future<SensorDeviceData> getSensors() => CamerawesomePlugin.getSensors();
+  Future<SensorDeviceData> getSensors() {
+    return CamerawesomePlugin.getSensors();
+  }
 
-  Future<int?> previewTextureId(int cameraPosition) =>
-      CamerawesomePlugin.getPreviewTexture(cameraPosition)
-          .then((num? value) => value?.toInt());
+  Future<int?> previewTextureId(int cameraPosition) {
+    return CamerawesomePlugin.getPreviewTexture(cameraPosition)
+        .then(((value) => value?.toInt()));
+  }
 }

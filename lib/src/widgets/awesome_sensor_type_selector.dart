@@ -1,13 +1,13 @@
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:flutter/material.dart';
 
 class AwesomeSensorTypeSelector extends StatefulWidget {
+  final CameraState state;
 
   const AwesomeSensorTypeSelector({
     super.key,
     required this.state,
   });
-  final CameraState state;
 
   @override
   State<AwesomeSensorTypeSelector> createState() =>
@@ -21,7 +21,7 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
   void initState() {
     super.initState();
 
-    widget.state.getSensors().then((SensorDeviceData sensorDeviceData) {
+    widget.state.getSensors().then((sensorDeviceData) {
       setState(() {
         _sensorDeviceData = sensorDeviceData;
       });
@@ -29,13 +29,17 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
   }
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<SensorConfig>(
+  Widget build(BuildContext context) {
+    return StreamBuilder<SensorConfig>(
       stream: widget.state.sensorConfig$,
-      builder: (_, AsyncSnapshot<SensorConfig> sensorConfigSnapshot) => AnimatedSwitcher(
+      builder: (_, sensorConfigSnapshot) {
+        return AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: _buildContent(sensorConfigSnapshot),
-        ),
+        );
+      },
     );
+  }
 
   Widget _buildContent(AsyncSnapshot<SensorConfig> sensorConfigSnapshot) {
     if (!sensorConfigSnapshot.hasData) {
@@ -49,10 +53,10 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
       return const SizedBox.shrink();
     }
 
-    final SensorConfig sensorConfig = sensorConfigSnapshot.requireData;
+    final sensorConfig = sensorConfigSnapshot.requireData;
     return StreamBuilder<SensorType>(
       stream: sensorConfig.sensorType$,
-      builder: (BuildContext context, AsyncSnapshot<SensorType> snapshot) {
+      builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const SizedBox.shrink();
         }
@@ -72,19 +76,19 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
             borderRadius: BorderRadius.circular(30),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: Wrap(
               spacing: 10,
               runAlignment: WrapAlignment.center,
               crossAxisAlignment: WrapCrossAlignment.center,
-              children: <Widget>[
+              children: [
                 if (_sensorDeviceData?.ultraWideAngle != null)
                   _SensorTypeButton(
                     sensorType: SensorType.ultraWideAngle,
                     isSelected: snapshot.data == SensorType.ultraWideAngle,
                     onTap: () {
                       widget.state.setSensorType(0, SensorType.ultraWideAngle,
-                          _sensorDeviceData!.ultraWideAngle!.uid,);
+                          _sensorDeviceData!.ultraWideAngle!.uid);
                     },
                   ),
                 if (_sensorDeviceData?.wideAngle != null)
@@ -93,7 +97,7 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                     isSelected: snapshot.data == SensorType.wideAngle,
                     onTap: () {
                       widget.state.setSensorType(0, SensorType.wideAngle,
-                          _sensorDeviceData!.wideAngle!.uid,);
+                          _sensorDeviceData!.wideAngle!.uid);
                     },
                   ),
                 if (_sensorDeviceData?.telephoto != null)
@@ -102,7 +106,7 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
                     isSelected: snapshot.data == SensorType.telephoto,
                     onTap: () {
                       widget.state.setSensorType(0, SensorType.telephoto,
-                          _sensorDeviceData!.telephoto!.uid,);
+                          _sensorDeviceData!.telephoto!.uid);
                     },
                   ),
                 // Text(snapshot.data.toString()),
@@ -116,18 +120,19 @@ class _AwesomeSensorTypeSelectorState extends State<AwesomeSensorTypeSelector> {
 }
 
 class _SensorTypeButton extends StatelessWidget {
+  final SensorType sensorType;
+  final bool isSelected;
+  final Function()? onTap;
 
   const _SensorTypeButton({
     required this.sensorType,
     this.isSelected = false,
     this.onTap,
   });
-  final SensorType sensorType;
-  final bool isSelected;
-  final Function()? onTap;
 
   @override
-  Widget build(BuildContext context) => AwesomeOrientedWidget(
+  Widget build(BuildContext context) {
+    return AwesomeOrientedWidget(
       child: AwesomeBouncingWidget(
         onTap: onTap,
         child: AnimatedContainer(
@@ -153,17 +158,18 @@ class _SensorTypeButton extends StatelessWidget {
         ),
       ),
     );
+  }
 
   String get sensorTypeZoomValue {
     switch (sensorType) {
       case SensorType.wideAngle:
-        return "1";
+        return '1';
       case SensorType.ultraWideAngle:
-        return "0.5";
+        return '0.5';
       case SensorType.telephoto:
-        return "2";
+        return '2';
       default:
-        return "1";
+        return '1';
     }
   }
 }

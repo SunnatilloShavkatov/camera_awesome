@@ -1,20 +1,24 @@
 // ignore_for_file: unused_import
 
-import "dart:io";
+import 'dart:io';
 
-import "package:camera_awesome/src/orchestrator/models/capture_modes.dart";
-import "package:camera_awesome/src/orchestrator/states/states.dart";
-import "package:camera_awesome/src/widgets/awesome_camera_mode_selector.dart";
-import "package:camera_awesome/src/widgets/camera_awesome_builder.dart";
-import "package:camera_awesome/src/widgets/filters/awesome_filter_widget.dart";
-import "package:camera_awesome/src/widgets/layout/layout.dart";
-import "package:camera_awesome/src/widgets/utils/awesome_theme.dart";
-import "package:camera_awesome/src/widgets/zoom/awesome_zoom_selector.dart";
-import "package:flutter/foundation.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/src/orchestrator/models/capture_modes.dart';
+import 'package:camera_awesome/src/orchestrator/states/states.dart';
+import 'package:camera_awesome/src/widgets/awesome_camera_mode_selector.dart';
+import 'package:camera_awesome/src/widgets/camera_awesome_builder.dart';
+import 'package:camera_awesome/src/widgets/filters/awesome_filter_widget.dart';
+import 'package:camera_awesome/src/widgets/layout/layout.dart';
+import 'package:camera_awesome/src/widgets/utils/awesome_theme.dart';
+import 'package:camera_awesome/src/widgets/zoom/awesome_zoom_selector.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 /// This widget doesn't handle [PreparingCameraState]
 class AwesomeCameraLayout extends StatelessWidget {
+  final CameraState state;
+  final Widget middleContent;
+  final Widget topActions;
+  final Widget bottomActions;
 
   AwesomeCameraLayout({
     super.key,
@@ -25,7 +29,7 @@ class AwesomeCameraLayout extends StatelessWidget {
     Widget? bottomActions,
   })  : middleContent = middleContent ??
             (Column(
-              children: <Widget>[
+              children: [
                 const Spacer(),
                 if (state is PhotoCameraState && state.hasFilters)
                   AwesomeFilterWidget(state: state)
@@ -37,26 +41,22 @@ class AwesomeCameraLayout extends StatelessWidget {
         topActions = topActions ?? AwesomeTopActions(state: state),
         bottomActions = bottomActions ??
             AwesomeBottomActions(state: state, onMediaTap: onMediaTap);
-  final CameraState state;
-  final Widget middleContent;
-  final Widget topActions;
-  final Widget bottomActions;
 
   @override
   Widget build(BuildContext context) {
-    final AwesomeTheme theme = AwesomeThemeProvider.of(context).theme;
+    final theme = AwesomeThemeProvider.of(context).theme;
     return SafeArea(
       bottom: false,
       child: Column(
-        children: <Widget>[
+        children: [
           topActions,
           Expanded(child: middleContent),
-          ColoredBox(
+          Container(
             color: theme.bottomActionsBackgroundColor,
             child: SafeArea(
               top: false,
               child: Column(
-                children: <Widget>[
+                children: [
                   bottomActions,
                 ],
               ),

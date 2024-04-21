@@ -1,8 +1,9 @@
-import "package:camera_awesome/pigeon.dart";
-import "package:camera_awesome/src/orchestrator/models/sensors.dart";
+import 'package:camera_awesome/pigeon.dart';
+import 'package:camera_awesome/src/orchestrator/models/sensors.dart';
 
 extension PigeonSensorAdapter on Sensor {
-  PigeonSensor toPigeon() => PigeonSensor(
+  PigeonSensor toPigeon() {
+    return PigeonSensor(
       position: position?.name != null
           ? PigeonSensorPosition.values.byName(position!.name)
           : PigeonSensorPosition.unknown,
@@ -11,4 +12,5 @@ extension PigeonSensorAdapter on Sensor {
           ? PigeonSensorType.values.byName(type!.name)
           : PigeonSensorType.unknown,
     );
+  }
 }

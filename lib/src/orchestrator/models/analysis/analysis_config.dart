@@ -1,13 +1,6 @@
-import "package:camera_awesome/camerawesome_plugin.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
 
 class AnalysisConfig {
-
-  AnalysisConfig({
-    this.maxFramesPerSecond,
-    this.autoStart = true,
-    this.androidOptions = const AndroidAnalysisOptions.nv21(width: 500),
-    this.cupertinoOptions = const CupertinoAnalysisOptions.bgra8888(),
-  });
   /// This is used to improve performance on low performance devices.
   /// It will skip frames if the camera is producing more than the specified.
   ///
@@ -25,9 +18,25 @@ class AnalysisConfig {
 
   /// iOS specific options for image analysis.
   final CupertinoAnalysisOptions cupertinoOptions;
+
+  AnalysisConfig({
+    this.maxFramesPerSecond,
+    this.autoStart = true,
+    this.androidOptions = const AndroidAnalysisOptions.nv21(width: 500),
+    this.cupertinoOptions = const CupertinoAnalysisOptions.bgra8888(),
+  });
 }
 
 class AndroidAnalysisOptions {
+  /// Image analysis format.
+  /// Recommended format for image analysis on Android is nv21.
+  final InputAnalysisImageFormat outputFormat;
+
+  /// `Target width of you image analysis. CamerAwesome will try to find the
+  /// closest resolution to this [width].
+  /// The smaller the image, the faster the analysis will be. 500 is often enough
+  /// to detect barcodes or faces for example.
+  final int width;
 
   const AndroidAnalysisOptions._({
     this.outputFormat = InputAnalysisImageFormat.nv21,
@@ -51,18 +60,12 @@ class AndroidAnalysisOptions {
   const AndroidAnalysisOptions.jpeg({
     required int width,
   }) : this._(width: width, outputFormat: InputAnalysisImageFormat.jpeg);
-  /// Image analysis format.
-  /// Recommended format for image analysis on Android is nv21.
-  final InputAnalysisImageFormat outputFormat;
-
-  /// `Target width of you image analysis. CamerAwesome will try to find the
-  /// closest resolution to this [width].
-  /// The smaller the image, the faster the analysis will be. 500 is often enough
-  /// to detect barcodes or faces for example.
-  final int width;
 }
 
 class CupertinoAnalysisOptions {
+  /// Image analysis format.
+  /// Recommended format for image analysis on iOS is bgra8888.
+  final InputAnalysisImageFormat outputFormat;
 
   const CupertinoAnalysisOptions._({
     required this.outputFormat,
@@ -70,7 +73,4 @@ class CupertinoAnalysisOptions {
 
   const CupertinoAnalysisOptions.bgra8888()
       : this._(outputFormat: InputAnalysisImageFormat.bgra8888);
-  /// Image analysis format.
-  /// Recommended format for image analysis on iOS is bgra8888.
-  final InputAnalysisImageFormat outputFormat;
 }

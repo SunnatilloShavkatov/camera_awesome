@@ -1,24 +1,24 @@
 class ConvolutionKernel extends Object {
-
-  const ConvolutionKernel(this.convolution, {this.bias = 0.0});
   final List<num> convolution;
   final double bias;
+
+  const ConvolutionKernel(this.convolution, {this.bias = 0.0});
 }
 
 const ConvolutionKernel identityKernel =
-    ConvolutionKernel(<num>[0, 0, 0, 0, 1, 0, 0, 0, 0]);
+    ConvolutionKernel([0, 0, 0, 0, 1, 0, 0, 0, 0]);
 const ConvolutionKernel sharpenKernel =
-    ConvolutionKernel(<num>[-1, -1, -1, -1, 9, -1, -1, -1, -1]);
+    ConvolutionKernel([-1, -1, -1, -1, 9, -1, -1, -1, -1]);
 const ConvolutionKernel embossKernel =
-    ConvolutionKernel(<num>[-1, -1, 0, -1, 0, 1, 0, 1, 1], bias: 128);
+    ConvolutionKernel([-1, -1, 0, -1, 0, 1, 0, 1, 1], bias: 128);
 const ConvolutionKernel coloredEdgeDetectionKernel =
-    ConvolutionKernel(<num>[1, 1, 1, 1, -7, 1, 1, 1, 1]);
+    ConvolutionKernel([1, 1, 1, 1, -7, 1, 1, 1, 1]);
 const ConvolutionKernel edgeDetectionMediumKernel =
-    ConvolutionKernel(<num>[0, 1, 0, 1, -4, 1, 0, 1, 0]);
+    ConvolutionKernel([0, 1, 0, 1, -4, 1, 0, 1, 0]);
 const ConvolutionKernel edgeDetectionHardKernel =
-    ConvolutionKernel(<num>[-1, -1, -1, -1, 8, -1, -1, -1, -1]);
+    ConvolutionKernel([-1, -1, -1, -1, 8, -1, -1, -1, -1]);
 
-const ConvolutionKernel blurKernel = ConvolutionKernel(<num>[
+const ConvolutionKernel blurKernel = ConvolutionKernel([
   0,
   0,
   1,
@@ -43,10 +43,10 @@ const ConvolutionKernel blurKernel = ConvolutionKernel(<num>[
   0,
   1,
   0,
-  0,
+  0
 ]);
 
-const ConvolutionKernel guassian3x3Kernel = ConvolutionKernel(<num>[
+const ConvolutionKernel guassian3x3Kernel = ConvolutionKernel([
   1,
   2,
   1,
@@ -58,7 +58,7 @@ const ConvolutionKernel guassian3x3Kernel = ConvolutionKernel(<num>[
   1,
 ]);
 
-const ConvolutionKernel guassian5x5Kernel = ConvolutionKernel(<num>[
+const ConvolutionKernel guassian5x5Kernel = ConvolutionKernel([
   2,
   04,
   05,
@@ -83,10 +83,10 @@ const ConvolutionKernel guassian5x5Kernel = ConvolutionKernel(<num>[
   04,
   05,
   04,
-  2,
+  2
 ]);
 
-const ConvolutionKernel guassian7x7Kernel = ConvolutionKernel(<num>[
+const ConvolutionKernel guassian7x7Kernel = ConvolutionKernel([
   1,
   1,
   2,
@@ -138,7 +138,7 @@ const ConvolutionKernel guassian7x7Kernel = ConvolutionKernel(<num>[
   1,
 ]);
 
-const ConvolutionKernel mean3x3Kernel = ConvolutionKernel(<num>[
+const ConvolutionKernel mean3x3Kernel = ConvolutionKernel([
   1,
   1,
   1,
@@ -150,7 +150,7 @@ const ConvolutionKernel mean3x3Kernel = ConvolutionKernel(<num>[
   1,
 ]);
 
-const ConvolutionKernel mean5x5Kernel = ConvolutionKernel(<num>[
+const ConvolutionKernel mean5x5Kernel = ConvolutionKernel([
   1,
   1,
   1,
@@ -175,10 +175,10 @@ const ConvolutionKernel mean5x5Kernel = ConvolutionKernel(<num>[
   1,
   1,
   1,
-  1,
+  1
 ]);
 
-const ConvolutionKernel lowPass3x3Kernel = ConvolutionKernel(<num>[
+const ConvolutionKernel lowPass3x3Kernel = ConvolutionKernel([
   1,
   2,
   1,
@@ -190,7 +190,7 @@ const ConvolutionKernel lowPass3x3Kernel = ConvolutionKernel(<num>[
   1,
 ]);
 
-const ConvolutionKernel lowPass5x5Kernel = ConvolutionKernel(<num>[
+const ConvolutionKernel lowPass5x5Kernel = ConvolutionKernel([
   1,
   1,
   1,
@@ -219,4 +219,4 @@ const ConvolutionKernel lowPass5x5Kernel = ConvolutionKernel(<num>[
 ]);
 
 const ConvolutionKernel highPass3x3Kernel =
-    ConvolutionKernel(<num>[0, -0.25, 0, -0.25, 2, -0.25, 0, -0.25, 0]);
+    ConvolutionKernel([0, -0.25, 0, -0.25, 2, -0.25, 0, -0.25, 0]);

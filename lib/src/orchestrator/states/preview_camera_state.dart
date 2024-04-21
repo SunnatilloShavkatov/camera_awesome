@@ -1,10 +1,8 @@
-// ignore_for_file: discarded_futures
+import 'dart:ui';
 
-import "dart:ui";
-
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:camera_awesome/pigeon.dart";
-import "package:camera_awesome/src/orchestrator/camera_context.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/pigeon.dart';
+import 'package:camera_awesome/src/orchestrator/camera_context.dart';
 
 /// Show the preview with optional image analysis, no photo or video captures
 class PreviewCameraState extends CameraState {
@@ -28,7 +26,7 @@ class PreviewCameraState extends CameraState {
     cameraContext.changeState(captureMode.toCameraState(cameraContext));
   }
 
-  void focus() {
+  focus() {
     cameraContext.focus();
   }
 
@@ -37,12 +35,14 @@ class PreviewCameraState extends CameraState {
     required PreviewSize pixelPreviewSize,
     required PreviewSize flutterPreviewSize,
     AndroidFocusSettings? androidFocusSettings,
-  }) => cameraContext.focusOnPoint(
+  }) {
+    return cameraContext.focusOnPoint(
       flutterPosition: flutterPosition,
       pixelPreviewSize: pixelPreviewSize,
       flutterPreviewSize: flutterPreviewSize,
       androidFocusSettings: androidFocusSettings,
     );
+  }
 
   @override
   void dispose() {}

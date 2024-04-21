@@ -1,62 +1,12 @@
-// ignore_for_file: close_sinks, comment_references, discarded_futures
+// ignore_for_file: close_sinks
 
-import "dart:async";
+import 'dart:async';
 
-import "package:camera_awesome/camerawesome_plugin.dart";
-import "package:rxdart/rxdart.dart";
+import 'package:camera_awesome/camerawesome_plugin.dart';
+import 'package:rxdart/rxdart.dart';
 
-// TODOfind a way to explain that this sensorconfig is not bound anymore (user changed sensor for example)
+// TODO find a way to explain that this sensorconfig is not bound anymore (user changed sensor for example)
 class SensorConfig {
-
-  SensorConfig.single({
-    Sensor? sensor,
-    FlashMode flashMode = FlashMode.none,
-    double zoom = 0.0,
-    CameraAspectRatios aspectRatio = CameraAspectRatios.ratio_4_3,
-  }) : this._(
-          sensors: <Sensor>[sensor ?? Sensor.position(SensorPosition.back)],
-          flash: flashMode,
-          currentZoom: zoom,
-          aspectRatio: aspectRatio,
-        );
-
-  SensorConfig.multiple({
-    required List<Sensor> sensors,
-    FlashMode flashMode = FlashMode.none,
-    double zoom = 0.0,
-    CameraAspectRatios aspectRatio = CameraAspectRatios.ratio_4_3,
-  }) : this._(
-          sensors: sensors,
-          flash: flashMode,
-          currentZoom: zoom,
-          aspectRatio: aspectRatio,
-        );
-
-  SensorConfig._({
-    required this.sensors,
-    FlashMode flash = FlashMode.none,
-    CameraAspectRatios aspectRatio = CameraAspectRatios.ratio_4_3,
-
-    /// Zoom must be between 0.0 (no zoom) and 1.0 (max zoom)
-    double currentZoom = 0.0,
-  }) {
-    _flashModeController = BehaviorSubject<FlashMode>.seeded(flash);
-    flashMode$ = _flashModeController.stream;
-
-    _sensorTypeController = BehaviorSubject<SensorType>.seeded(
-        sensors.first.type ?? SensorType.wideAngle,);
-    sensorType$ = _sensorTypeController.stream;
-
-    _zoomController = BehaviorSubject<double>.seeded(currentZoom);
-    zoom$ = _zoomController.stream;
-
-    _aspectRatioController = BehaviorSubject.seeded(aspectRatio);
-    aspectRatio$ = _aspectRatioController.stream;
-
-    _brightnessSubscription = _brightnessController.stream
-        .debounceTime(const Duration(milliseconds: 500))
-        .listen(CamerawesomePlugin.setBrightness);
-  }
   late BehaviorSubject<FlashMode> _flashModeController;
 
   late BehaviorSubject<SensorType> _sensorTypeController;
@@ -88,9 +38,59 @@ class SensorConfig {
       BehaviorSubject<double>();
   StreamSubscription? _brightnessSubscription;
 
+  SensorConfig.single({
+    Sensor? sensor,
+    FlashMode flashMode = FlashMode.none,
+    double zoom = 0.0,
+    CameraAspectRatios aspectRatio = CameraAspectRatios.ratio_4_3,
+  }) : this._(
+          sensors: [sensor ?? Sensor.position(SensorPosition.back)],
+          flash: flashMode,
+          currentZoom: zoom,
+          aspectRatio: aspectRatio,
+        );
+
+  SensorConfig.multiple({
+    required List<Sensor> sensors,
+    FlashMode flashMode = FlashMode.none,
+    double zoom = 0.0,
+    CameraAspectRatios aspectRatio = CameraAspectRatios.ratio_4_3,
+  }) : this._(
+          sensors: sensors,
+          flash: flashMode,
+          currentZoom: zoom,
+          aspectRatio: aspectRatio,
+        );
+
+  SensorConfig._({
+    required this.sensors,
+    FlashMode flash = FlashMode.none,
+    CameraAspectRatios aspectRatio = CameraAspectRatios.ratio_4_3,
+
+    /// Zoom must be between 0.0 (no zoom) and 1.0 (max zoom)
+    double currentZoom = 0.0,
+  }) {
+    _flashModeController = BehaviorSubject<FlashMode>.seeded(flash);
+    flashMode$ = _flashModeController.stream;
+
+    _sensorTypeController = BehaviorSubject<SensorType>.seeded(
+        sensors.first.type ?? SensorType.wideAngle);
+    sensorType$ = _sensorTypeController.stream;
+
+    _zoomController = BehaviorSubject<double>.seeded(currentZoom);
+    zoom$ = _zoomController.stream;
+
+    _aspectRatioController = BehaviorSubject.seeded(aspectRatio);
+    aspectRatio$ = _aspectRatioController.stream;
+
+    _brightnessSubscription = _brightnessController.stream
+        .debounceTime(const Duration(milliseconds: 500))
+        .listen((value) => CamerawesomePlugin.setBrightness(value));
+  }
+
   Future<void> setZoom(double zoom) async {
     if (zoom < 0 || zoom > 1) {
-      throw ArgumentError("Zoom value must be between 0 and 1");
+      throw "Zoom value must be between 0 and 1";
     }
     await CamerawesomePlugin.setZoom(zoom);
     if (!_zoomController.isClosed) {
@@ -120,12 +120,16 @@ class SensorConfig {
     switch (flashMode) {
       case FlashMode.none:
         newFlashMode = FlashMode.auto;
+        break;
       case FlashMode.on:
         newFlashMode = FlashMode.always;
+        break;
       case FlashMode.auto:
         newFlashMode = FlashMode.on;
+        break;
       case FlashMode.always:
         newFlashMode = FlashMode.none;
+        break;
     }
     setFlashMode(newFlashMode);
   }
@@ -136,11 +140,11 @@ class SensorConfig {
   /// [CameraAspectRatios.ratio_1_1]
   Future<void> switchCameraRatio() async {
     if (aspectRatio == CameraAspectRatios.ratio_16_9) {
-      await setAspectRatio(CameraAspectRatios.ratio_4_3);
+      setAspectRatio(CameraAspectRatios.ratio_4_3);
     } else if (aspectRatio == CameraAspectRatios.ratio_4_3) {
-      await setAspectRatio(CameraAspectRatios.ratio_1_1);
+      setAspectRatio(CameraAspectRatios.ratio_1_1);
     } else {
-      await setAspectRatio(CameraAspectRatios.ratio_16_9);
+      setAspectRatio(CameraAspectRatios.ratio_16_9);
     }
   }
 
@@ -157,9 +161,9 @@ class SensorConfig {
   CameraAspectRatios get aspectRatio => _aspectRatioController.value;
 
   /// set brightness correction manually range [0,1] (optionnal)
-  void setBrightness(double brightness) {
+  setBrightness(double brightness) {
     if (brightness < 0 || brightness > 1) {
-      throw ArgumentError("Brightness value must be between 0 and 1");
+      throw "Brightness value must be between 0 and 1";
     }
     // The stream will debounce before actually setting the brightness
     _brightnessController.sink.add(brightness);

@@ -1,14 +1,19 @@
-import "package:camera_awesome/src/orchestrator/models/media_capture.dart";
-import "package:camera_awesome/src/orchestrator/states/states.dart";
-import "package:camera_awesome/src/widgets/awesome_media_preview.dart";
-import "package:camera_awesome/src/widgets/buttons/awesome_camera_switch_button.dart";
-import "package:camera_awesome/src/widgets/buttons/awesome_capture_button.dart";
-import "package:camera_awesome/src/widgets/buttons/awesome_pause_resume_button.dart";
-import "package:camera_awesome/src/widgets/camera_awesome_builder.dart";
-import "package:camera_awesome/src/widgets/utils/awesome_theme.dart";
-import "package:flutter/material.dart";
+import 'package:camera_awesome/src/orchestrator/models/media_capture.dart';
+import 'package:camera_awesome/src/orchestrator/states/states.dart';
+import 'package:camera_awesome/src/widgets/awesome_media_preview.dart';
+import 'package:camera_awesome/src/widgets/buttons/awesome_camera_switch_button.dart';
+import 'package:camera_awesome/src/widgets/buttons/awesome_capture_button.dart';
+import 'package:camera_awesome/src/widgets/buttons/awesome_pause_resume_button.dart';
+import 'package:camera_awesome/src/widgets/camera_awesome_builder.dart';
+import 'package:camera_awesome/src/widgets/utils/awesome_theme.dart';
+import 'package:flutter/material.dart';
 
 class AwesomeBottomActions extends StatelessWidget {
+  final CameraState state;
+  final Widget left;
+  final Widget right;
+  final Widget captureButton;
+  final EdgeInsets padding;
 
   AwesomeBottomActions({
     super.key,
@@ -27,8 +32,8 @@ class AwesomeBottomActions extends StatelessWidget {
                 ? AwesomePauseResumeButton(
                     state: state,
                   )
-                : Builder(builder: (BuildContext context) {
-                    final AwesomeTheme theme = AwesomeThemeProvider.of(context).theme;
+                : Builder(builder: (context) {
+                    final theme = AwesomeThemeProvider.of(context).theme;
                     return AwesomeCameraSwitchButton(
                       state: state,
                       theme: theme.copyWith(
@@ -37,13 +42,13 @@ class AwesomeBottomActions extends StatelessWidget {
                         ),
                       ),
                     );
-                  },)),
+                  })),
         right = right ??
             (state is VideoRecordingCameraState
                 ? const SizedBox(width: 48)
                 : StreamBuilder<MediaCapture?>(
                     stream: state.captureState$,
-                    builder: (BuildContext context, AsyncSnapshot<MediaCapture?> snapshot) {
+                    builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const SizedBox(width: 60, height: 60);
                       }
@@ -56,18 +61,14 @@ class AwesomeBottomActions extends StatelessWidget {
                       );
                     },
                   ));
-  final CameraState state;
-  final Widget left;
-  final Widget right;
-  final Widget captureButton;
-  final EdgeInsets padding;
 
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context) {
+    return Padding(
       padding: padding,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
+        children: [
           Expanded(
             child: Center(
               child: left,
@@ -82,4 +83,5 @@ class AwesomeBottomActions extends StatelessWidget {
         ],
       ),
     );
+  }
 }

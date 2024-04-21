@@ -55,12 +55,6 @@ enum CupertinoFileType {
 }
 
 class CupertinoVideoOptions {
-  CupertinoVideoOptions({
-    this.codec = CupertinoVideoCodec.h264,
-    this.fileType = CupertinoFileType.quickTimeMovie,
-    this.fps,
-  });
-
   /// The video codec to use when recording a video.
   CupertinoVideoCodec codec;
 
@@ -71,9 +65,17 @@ class CupertinoVideoOptions {
 
   int? fps;
 
-  Map<String, dynamic> toMap() => <String, dynamic>{
-        "codec": codec.name,
-        "fileType": fileType.name,
-        "fps": fps,
-      };
+  CupertinoVideoOptions({
+    this.codec = CupertinoVideoCodec.h264,
+    this.fileType = CupertinoFileType.quickTimeMovie,
+    this.fps,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'codec': codec.name,
+      'fileType': fileType.name,
+      'fps': fps,
+    };
+  }
 }

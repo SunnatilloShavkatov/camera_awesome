@@ -1,8 +1,9 @@
-import "package:camera_awesome/src/photofilters/filters/image_filters.dart";
-import "package:camera_awesome/src/photofilters/filters/subfilters.dart";
-import "package:camera_awesome/src/photofilters/utils/convolution_kernels.dart";
+import 'package:camera_awesome/src/photofilters/filters/subfilters.dart';
 
-final List<ImageFilter> presetConvolutionFiltersList = <ImageFilter>[
+import 'package:camera_awesome/src/photofilters/utils/convolution_kernels.dart';
+import 'package:camera_awesome/src/photofilters/filters/image_filters.dart';
+
+final presetConvolutionFiltersList = [
   ImageFilter(name: "Identity")
     ..addSubFilter(ConvolutionSubFilter.fromKernel(identityKernel)),
   ImageFilter(name: "Sharpen")
