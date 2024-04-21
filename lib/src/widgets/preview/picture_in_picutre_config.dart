@@ -1,5 +1,5 @@
-import 'package:camerawesome/src/orchestrator/models/sensors.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/src/orchestrator/models/sensors.dart";
+import "package:flutter/material.dart";
 
 /// Builder used to decoarate the [preview] within it. The [preview] is the
 /// one tied to the [sensor].
@@ -17,11 +17,6 @@ typedef PictureInPictureConfigBuilder = PictureInPictureConfig Function(
 );
 
 class PictureInPictureConfig {
-  final Offset startingPosition;
-  final bool isDraggable;
-  final Sensor sensor;
-  final PictureInPictureBuilder pictureInPictureBuilder;
-  final VoidCallback? onTap;
 
   PictureInPictureConfig({
     this.startingPosition = const Offset(20, 20),
@@ -30,23 +25,21 @@ class PictureInPictureConfig {
     PictureInPictureBuilder? pictureInPictureBuilder,
     this.onTap,
   }) : pictureInPictureBuilder = pictureInPictureBuilder ??
-            ((preview, aspectRatio) {
-              return Container(
+            ((Widget preview, double aspectRatio) => DecoratedBox(
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(color: Colors.white60, width: 3),
                     borderRadius: BorderRadius.circular(23),
-                    boxShadow: [
+                    boxShadow: <BoxShadow>[
                       BoxShadow(
                         color: Colors.black.withOpacity(0.15),
                         spreadRadius: 10,
                         blurRadius: 20,
-                        offset: const Offset(0, 0),
                       ),
                     ],
                   ),
                   child: Stack(
-                    children: [
+                    children: <Widget>[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: SizedBox(
@@ -58,6 +51,10 @@ class PictureInPictureConfig {
                       ),
                       Text("${sensor.position}"),
                     ],
-                  ));
-            });
+                  ),));
+  final Offset startingPosition;
+  final bool isDraggable;
+  final Sensor sensor;
+  final PictureInPictureBuilder pictureInPictureBuilder;
+  final VoidCallback? onTap;
 }

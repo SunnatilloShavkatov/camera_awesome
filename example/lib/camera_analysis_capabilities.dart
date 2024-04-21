@@ -1,5 +1,5 @@
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
 
 void main() {
   runApp(const CameraAwesomeApp());
@@ -9,12 +9,10 @@ class CameraAwesomeApp extends StatelessWidget {
   const CameraAwesomeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Camera Analysis Capabilities',
+  Widget build(BuildContext context) => const MaterialApp(
+      title: "Camera Analysis Capabilities",
       home: CameraPage(),
     );
-  }
 }
 
 class CameraPage extends StatelessWidget {
@@ -22,9 +20,9 @@ class CameraPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sensor = Sensor.position(SensorPosition.back);
+    final Sensor sensor = Sensor.position(SensorPosition.back);
     return Scaffold(
-      body: Container(
+      body: ColoredBox(
         color: Colors.white,
         child: CameraAwesomeBuilder.awesome(
           // Setting both video recording and image analysis is an error on Android if the camera is not of LEVEL 3
@@ -32,8 +30,8 @@ class CameraPage extends StatelessWidget {
           saveConfig: SaveConfig.photoAndVideo(
             initialCaptureMode: CaptureMode.video,
           ),
-          onImageForAnalysis: (image) async {
-            debugPrint('Image for analysis received: ${image.size}');
+          onImageForAnalysis: (AnalysisImage image) async {
+            debugPrint("Image for analysis received: ${image.size}");
           },
           imageAnalysisConfig: AnalysisConfig(
             androidOptions: const AndroidAnalysisOptions.jpeg(
@@ -44,13 +42,12 @@ class CameraPage extends StatelessWidget {
           sensorConfig: SensorConfig.single(
             sensor: sensor,
           ),
-          previewDecoratorBuilder: (state, _) {
-            return Center(
+          previewDecoratorBuilder: (CameraState state, _) => Center(
               child: FutureBuilder<bool>(
                   future: CameraCharacteristics
                       .isVideoRecordingAndImageAnalysisSupported(
-                          sensor.position!),
-                  builder: (_, snapshot) {
+                          sensor.position!,),
+                  builder: (_, AsyncSnapshot<bool> snapshot) {
                     debugPrint("___---___--- received result ${snapshot.data}");
                     if (snapshot.data == null) {
                       return const CircularProgressIndicator();
@@ -67,9 +64,8 @@ class CameraPage extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     );
-                  }),
-            );
-          },
+                  },),
+            ),
         ),
       ),
     );

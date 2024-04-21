@@ -1,15 +1,9 @@
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:carousel_slider/carousel_slider.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 class AwesomeFilterSelector extends StatefulWidget {
-  final PhotoCameraState state;
-  final FilterListPosition filterListPosition;
-  final Widget indicator;
-  final EdgeInsets? filterListPadding;
-  final Color? filterListBackgroundColor;
-
   const AwesomeFilterSelector({
     super.key,
     required this.state,
@@ -18,6 +12,12 @@ class AwesomeFilterSelector extends StatefulWidget {
     required this.filterListBackgroundColor,
     required this.indicator,
   });
+
+  final PhotoCameraState state;
+  final FilterListPosition filterListPosition;
+  final Widget indicator;
+  final EdgeInsets? filterListPadding;
+  final Color? filterListBackgroundColor;
 
   @override
   State<AwesomeFilterSelector> createState() => _AwesomeFilterSelectorState();
@@ -29,7 +29,7 @@ class _AwesomeFilterSelectorState extends State<AwesomeFilterSelector> {
   int _selected = 0;
 
   List<String> get presetsIds =>
-      widget.state.availableFilters!.map((e) => e.id).toList();
+      widget.state.availableFilters!.map((AwesomeFilter e) => e.id).toList();
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _AwesomeFilterSelectorState extends State<AwesomeFilterSelector> {
 
     _selected = presetsIds.indexOf(widget.state.filter.id);
 
-    widget.state.previewTextureId(0).then((textureId) {
+    widget.state.previewTextureId(0).then((int? textureId) {
       setState(() {
         _textureId = textureId;
       });
@@ -46,19 +46,19 @@ class _AwesomeFilterSelectorState extends State<AwesomeFilterSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final children = [
+    final List<Widget> children = <Widget>[
       widget.indicator,
       Container(
         padding: widget.filterListPadding,
         color: widget.filterListBackgroundColor,
         child: Stack(
-          children: [
+          children: <Widget>[
             CarouselSlider(
               options: CarouselOptions(
-                height: 60.0,
+                height: 60,
                 initialPage: _selected,
-                onPageChanged: (index, reason) {
-                  final filter = awesomePresetFiltersList[index];
+                onPageChanged: (int index, CarouselPageChangedReason reason) {
+                  final AwesomeFilter filter = awesomePresetFiltersList[index];
 
                   setState(() {
                     _selected = index;
@@ -71,25 +71,25 @@ class _AwesomeFilterSelectorState extends State<AwesomeFilterSelector> {
                 viewportFraction: 0.165,
               ),
               carouselController: _controller,
-              items: awesomePresetFiltersList.map((filter) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return AwesomeBouncingWidget(
-                      onTap: () {
-                        _controller.animateToPage(
-                          presetsIds.indexOf(filter.id),
-                          curve: Curves.fastLinearToSlowEaseIn,
-                          duration: const Duration(milliseconds: 700),
-                        );
-                      },
-                      child: _FilterPreview(
-                        filter: filter.preview,
-                        textureId: _textureId,
+              items: awesomePresetFiltersList
+                  .map(
+                    (AwesomeFilter filter) => Builder(
+                      builder: (BuildContext context) => AwesomeBouncingWidget(
+                        onTap: () {
+                          _controller.animateToPage(
+                            presetsIds.indexOf(filter.id),
+                            curve: Curves.fastLinearToSlowEaseIn,
+                            duration: const Duration(milliseconds: 700),
+                          );
+                        },
+                        child: _FilterPreview(
+                          filter: filter.preview,
+                          textureId: _textureId,
+                        ),
                       ),
-                    );
-                  },
-                );
-              }).toList(),
+                    ),
+                  )
+                  .toList(),
             ),
             IgnorePointer(
               child: Center(
@@ -120,40 +120,35 @@ class _AwesomeFilterSelectorState extends State<AwesomeFilterSelector> {
 }
 
 class _FilterPreview extends StatelessWidget {
+  const _FilterPreview({
+    required this.filter,
+    required this.textureId,
+  });
+
   final ColorFilter filter;
   final int? textureId;
 
-  const _FilterPreview({
-    Key? key,
-    required this.filter,
-    required this.textureId,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(9)),
-      child: SizedBox(
-        width: 60,
-        height: 60,
-        child: textureId != null
-            ? ColorFiltered(
-                colorFilter: filter,
-                child: OverflowBox(
-                  alignment: Alignment.center,
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: 60,
-                      // TODO: maybe this is inverted on Android ??
-                      height: 60 / (9 / 16),
-                      child: Texture(textureId: textureId!),
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(9)),
+        child: SizedBox(
+          width: 60,
+          height: 60,
+          child: textureId != null
+              ? ColorFiltered(
+                  colorFilter: filter,
+                  child: OverflowBox(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: 60,
+                        height: 60 / (9 / 16),
+                        child: Texture(textureId: textureId!),
+                      ),
                     ),
                   ),
-                ),
-              )
-            : const SizedBox.shrink(),
-      ),
-    );
-  }
+                )
+              : const SizedBox.shrink(),
+        ),
+      );
 }

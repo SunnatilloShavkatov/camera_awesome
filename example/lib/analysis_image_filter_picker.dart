@@ -1,11 +1,11 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
+import "dart:async";
+import "dart:io";
+import "dart:math";
+import "dart:typed_data";
 
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
-import 'package:image/image.dart' as imglib;
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
+import "package:image/image.dart" as imglib;
 
 void main() {
   runApp(const CameraAwesomeApp());
@@ -15,12 +15,10 @@ class CameraAwesomeApp extends StatelessWidget {
   const CameraAwesomeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'CamerAwesome App - Filter picker example',
-      home: CameraPage(),
-    );
-  }
+  Widget build(BuildContext context) => const MaterialApp(
+        title: "CamerAwesome App - Filter picker example",
+        home: CameraPage(),
+      );
 }
 
 class CameraPage extends StatefulWidget {
@@ -31,7 +29,8 @@ class CameraPage extends StatefulWidget {
 }
 
 class _CameraPageState extends State<CameraPage> {
-  final _imageStreamController = StreamController<AnalysisImage>();
+  final StreamController<AnalysisImage> _imageStreamController =
+      StreamController<AnalysisImage>();
 
   @override
   void dispose() {
@@ -40,29 +39,26 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: CameraAwesomeBuilder.analysisOnly(
-        sensorConfig: SensorConfig.single(
-          sensor: Sensor.position(SensorPosition.front),
-          aspectRatio: CameraAspectRatios.ratio_1_1,
-        ),
-        onImageForAnalysis: (img) async => _imageStreamController.add(img),
-        imageAnalysisConfig: AnalysisConfig(
-          androidOptions: const AndroidAnalysisOptions.yuv420(
-            width: 150,
+  Widget build(BuildContext context) => Scaffold(
+        body: CameraAwesomeBuilder.analysisOnly(
+          sensorConfig: SensorConfig.single(
+            sensor: Sensor.position(SensorPosition.front),
+            aspectRatio: CameraAspectRatios.ratio_1_1,
           ),
-          cupertinoOptions: const CupertinoAnalysisOptions.bgra8888(),
-          maxFramesPerSecond: 30,
-        ),
-        builder: (state, preview) {
-          return _MyPreviewDecoratorWidget(
+          onImageForAnalysis: (AnalysisImage img) async =>
+              _imageStreamController.add(img),
+          imageAnalysisConfig: AnalysisConfig(
+            androidOptions: const AndroidAnalysisOptions.yuv420(
+              width: 150,
+            ),
+            maxFramesPerSecond: 30,
+          ),
+          builder: (CameraState state, Preview preview) =>
+              _MyPreviewDecoratorWidget(
             analysisImageStream: _imageStreamController.stream,
-          );
-        },
-      ),
-    );
-  }
+          ),
+        ),
+      );
 }
 
 enum ImageFilter {
@@ -124,7 +120,7 @@ enum ImageFilter {
       case ImageFilter.convolution:
         return imglib.convolution(
           image,
-          filter: [
+          filter: <num>[
             1,
             1,
             1,
@@ -194,11 +190,11 @@ enum ImageFilter {
 }
 
 class _MyPreviewDecoratorWidget extends StatefulWidget {
-  final Stream<AnalysisImage> analysisImageStream;
-
   const _MyPreviewDecoratorWidget({
     required this.analysisImageStream,
   });
+
+  final Stream<AnalysisImage> analysisImageStream;
 
   @override
   State<_MyPreviewDecoratorWidget> createState() =>
@@ -210,114 +206,119 @@ class _MyPreviewDecoratorWidgetState extends State<_MyPreviewDecoratorWidget> {
   ImageFilter _filter = ImageFilter.billboard;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: StreamBuilder<AnalysisImage>(
-            stream: widget.analysisImageStream,
-            builder: (_, snapshot) {
-              if (!snapshot.hasData) {
-                return const SizedBox.shrink();
-              }
+  Widget build(BuildContext context) => Column(
+        children: <Widget>[
+          Expanded(
+            child: StreamBuilder<AnalysisImage>(
+              stream: widget.analysisImageStream,
+              builder: (_, AsyncSnapshot<AnalysisImage> snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox.shrink();
+                }
 
-              final img = snapshot.requireData;
-              return img.when(jpeg: (image) {
-                    _currentJpeg = _applyFilterOnBytes(image.bytes);
+                final AnalysisImage img = snapshot.requireData;
+                return img.when(
+                      jpeg: (JpegImage image) {
+                        _currentJpeg = _applyFilterOnBytes(image.bytes);
 
-                    return ImageAnalysisPreview(
-                      currentJpeg: _currentJpeg!,
-                      width: image.width.toDouble(),
-                      height: image.height.toDouble(),
+                        return ImageAnalysisPreview(
+                          currentJpeg: _currentJpeg!,
+                          width: image.width.toDouble(),
+                          height: image.height.toDouble(),
+                        );
+                      },
+                      yuv420: (Yuv420Image image) => FutureBuilder<JpegImage>(
+                        future: image.toJpeg(),
+                        builder: (_, AsyncSnapshot<JpegImage> snapshot) {
+                          if (snapshot.data == null && _currentJpeg == null) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.data != null) {
+                            _currentJpeg =
+                                _applyFilterOnBytes(snapshot.data!.bytes);
+                          }
+                          return ImageAnalysisPreview(
+                            currentJpeg: _currentJpeg!,
+                            width: image.width.toDouble(),
+                            height: image.height.toDouble(),
+                          );
+                        },
+                      ),
+                      nv21: (Nv21Image image) => FutureBuilder<JpegImage>(
+                        future: image.toJpeg(),
+                        builder: (_, AsyncSnapshot<JpegImage> snapshot) {
+                          if (snapshot.data == null && _currentJpeg == null) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.data != null) {
+                            _currentJpeg =
+                                _applyFilterOnBytes(snapshot.data!.bytes);
+                          }
+                          return ImageAnalysisPreview(
+                            currentJpeg: _currentJpeg!,
+                            width: image.width.toDouble(),
+                            height: image.height.toDouble(),
+                          );
+                        },
+                      ),
+                      bgra8888: (Bgra8888Image image) {
+                        // _currentJpeg = _applyFilterOnImage(
+                        //   imglib.Image.fromBytes(
+                        //     width: image.width,
+                        //     height: image.height,
+                        //     bytes: image.planes[0].bytes.buffer,
+                        //     order: imglib.ChannelOrder.bgra,
+                        //   ),
+                        // );
+
+                        return FutureBuilder<JpegImage>(
+                          future: image.toJpeg(),
+                          builder: (_, AsyncSnapshot<JpegImage> snapshot) {
+                            if (snapshot.data == null && _currentJpeg == null) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (snapshot.data != null) {
+                              _currentJpeg =
+                                  _applyFilterOnBytes(snapshot.data!.bytes);
+                            }
+                            return ImageAnalysisPreview(
+                              currentJpeg: _currentJpeg!,
+                              width: image.width.toDouble(),
+                              height: image.height.toDouble(),
+                            );
+                          },
+                        );
+
+                        // return ImageAnalysisPreview(
+                        //   currentJpeg: _currentJpeg!,
+                        //   width: image.width.toDouble(),
+                        //   height: image.height.toDouble(),
+                        // );
+                      },
+                    ) ??
+                    const ColoredBox(
+                      color: Colors.red,
+                      child: Center(
+                        child: Text("Format unsupported or conversion failed"),
+                      ),
                     );
-                  }, yuv420: (image) {
-                    return FutureBuilder<JpegImage>(
-                        future: image.toJpeg(),
-                        builder: (_, snapshot) {
-                          if (snapshot.data == null && _currentJpeg == null) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          } else if (snapshot.data != null) {
-                            _currentJpeg =
-                                _applyFilterOnBytes(snapshot.data!.bytes);
-                          }
-                          return ImageAnalysisPreview(
-                            currentJpeg: _currentJpeg!,
-                            width: image.width.toDouble(),
-                            height: image.height.toDouble(),
-                          );
-                        });
-                  }, nv21: (image) {
-                    return FutureBuilder<JpegImage>(
-                        future: image.toJpeg(),
-                        builder: (_, snapshot) {
-                          if (snapshot.data == null && _currentJpeg == null) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          } else if (snapshot.data != null) {
-                            _currentJpeg =
-                                _applyFilterOnBytes(snapshot.data!.bytes);
-                          }
-                          return ImageAnalysisPreview(
-                            currentJpeg: _currentJpeg!,
-                            width: image.width.toDouble(),
-                            height: image.height.toDouble(),
-                          );
-                        });
-                  }, bgra8888: (image) {
-                    // _currentJpeg = _applyFilterOnImage(
-                    //   imglib.Image.fromBytes(
-                    //     width: image.width,
-                    //     height: image.height,
-                    //     bytes: image.planes[0].bytes.buffer,
-                    //     order: imglib.ChannelOrder.bgra,
-                    //   ),
-                    // );
-
-                    return FutureBuilder<JpegImage>(
-                        future: image.toJpeg(),
-                        builder: (_, snapshot) {
-                          if (snapshot.data == null && _currentJpeg == null) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          } else if (snapshot.data != null) {
-                            _currentJpeg =
-                                _applyFilterOnBytes(snapshot.data!.bytes);
-                          }
-                          return ImageAnalysisPreview(
-                            currentJpeg: _currentJpeg!,
-                            width: image.width.toDouble(),
-                            height: image.height.toDouble(),
-                          );
-                        });
-
-                    // return ImageAnalysisPreview(
-                    //   currentJpeg: _currentJpeg!,
-                    //   width: image.width.toDouble(),
-                    //   height: image.height.toDouble(),
-                    // );
-                  }) ??
-                  Container(
-                    color: Colors.red,
-                    child: const Center(
-                      child: Text("Format unsupported or conversion failed"),
-                    ),
-                  );
-            },
-          ),
-        ),
-        SizedBox(
-          height: 200,
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 40 / 9,
-              crossAxisSpacing: 2,
-              mainAxisSpacing: 2,
+              },
             ),
-            itemCount: ImageFilter.values.length,
-            itemBuilder: (_, index) {
-              return Material(
+          ),
+          SizedBox(
+            height: 200,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 40 / 9,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+              ),
+              itemCount: ImageFilter.values.length,
+              itemBuilder: (_, int index) => Material(
                 color: _filter == ImageFilter.values[index]
                     ? Colors.blue
                     : Colors.white,
@@ -333,31 +334,22 @@ class _MyPreviewDecoratorWidgetState extends State<_MyPreviewDecoratorWidget> {
                     child: Text(ImageFilter.values[index].name),
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 
-  Uint8List _applyFilterOnBytes(Uint8List bytes) {
-    return _applyFilterOnImage(imglib.decodeJpg(bytes)!);
-  }
+  Uint8List _applyFilterOnBytes(Uint8List bytes) =>
+      _applyFilterOnImage(imglib.decodeJpg(bytes)!);
 
-  Uint8List _applyFilterOnImage(imglib.Image image) {
-    return imglib.encodeJpg(
-      _filter.applyFilter(image),
-      quality: 70,
-    );
-  }
+  Uint8List _applyFilterOnImage(imglib.Image image) => imglib.encodeJpg(
+        _filter.applyFilter(image),
+        quality: 70,
+      );
 }
 
 class ImageAnalysisPreview extends StatelessWidget {
-  final double width;
-  final double height;
-  final Uint8List currentJpeg;
-
   const ImageAnalysisPreview({
     super.key,
     required this.currentJpeg,
@@ -365,23 +357,25 @@ class ImageAnalysisPreview extends StatelessWidget {
     required this.height,
   });
 
+  final double width;
+  final double height;
+  final Uint8List currentJpeg;
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      child: Transform.scale(
-        scaleX: -1,
-        child: Transform.rotate(
-          angle: Platform.isAndroid ? 3 / 2 * pi : 0,
-          child: SizedBox.expand(
-            child: Image.memory(
-              currentJpeg,
-              gaplessPlayback: true,
-              fit: BoxFit.cover,
+  Widget build(BuildContext context) => ColoredBox(
+        color: Colors.black,
+        child: Transform.scale(
+          scaleX: -1,
+          child: Transform.rotate(
+            angle: Platform.isAndroid ? 3 / 2 * pi : 0,
+            child: SizedBox.expand(
+              child: Image.memory(
+                currentJpeg,
+                gaplessPlayback: true,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }

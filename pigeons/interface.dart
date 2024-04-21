@@ -1,10 +1,10 @@
-import 'package:pigeon/pigeon.dart';
+import "package:pigeon/pigeon.dart";
 
 class PreviewSize {
+  const PreviewSize(this.width, this.height);
+
   final double width;
   final double height;
-
-  const PreviewSize(this.width, this.height);
 }
 
 class PreviewData {
@@ -13,21 +13,21 @@ class PreviewData {
 }
 
 class ExifPreferences {
-  bool saveGPSLocation;
-
   ExifPreferences({required this.saveGPSLocation});
+
+  bool saveGPSLocation;
 }
 
 class PigeonSensor {
-  final PigeonSensorPosition position;
-  final PigeonSensorType type;
-  final String? deviceId;
-
   PigeonSensor({
     this.position = PigeonSensorPosition.unknown,
     this.type = PigeonSensorType.unknown,
     this.deviceId,
   });
+
+  final PigeonSensorPosition position;
+  final PigeonSensorType type;
+  final String? deviceId;
 }
 
 enum PigeonSensorPosition {
@@ -61,35 +61,34 @@ enum QualityFallbackStrategy {
 
 /// Video recording options. Some of them are specific to each platform.
 class VideoOptions {
-  /// Enable audio while video recording
-  final bool enableAudio;
-
-  /// The quality of the video recording, defaults to [VideoRecordingQuality.highest].
-  final VideoRecordingQuality? quality;
-
-  // TODO if there are properties common to all platform, move them here (iOS, Android and Web)
-  final AndroidVideoOptions? android;
-  final CupertinoVideoOptions? ios;
-
   VideoOptions({
     required this.android,
     required this.ios,
     required this.enableAudio,
     required this.quality,
   });
+
+  /// Enable audio while video recording
+  final bool enableAudio;
+
+  /// The quality of the video recording, defaults to [VideoRecordingQuality.highest].
+  final VideoRecordingQuality? quality;
+
+  final AndroidVideoOptions? android;
+  final CupertinoVideoOptions? ios;
 }
 
 class AndroidVideoOptions {
+  AndroidVideoOptions({
+    required this.bitrate,
+    required this.fallbackStrategy,
+  });
+
   /// The bitrate of the video recording. Only set it if a custom bitrate is
   /// desired.
   final int? bitrate;
 
   final QualityFallbackStrategy? fallbackStrategy;
-
-  AndroidVideoOptions({
-    required this.bitrate,
-    required this.fallbackStrategy,
-  });
 }
 
 enum CupertinoFileType {
@@ -113,20 +112,18 @@ enum CupertinoCodecType {
 }
 
 class CupertinoVideoOptions {
-  /// Specify video file type, defaults to [AVFileTypeQuickTimeMovie].
-  final CupertinoFileType? fileType;
-
-  /// Specify video codec, defaults to [AVVideoCodecTypeH264].
-  final CupertinoCodecType? codec;
-
-  /// Specify video fps, defaults to [30].
-  final int? fps;
-
   CupertinoVideoOptions({
     this.fileType,
     this.codec,
     this.fps,
   });
+
+  final CupertinoFileType? fileType;
+
+  final CupertinoCodecType? codec;
+
+  /// Specify video fps, defaults to [30].
+  final int? fps;
 }
 
 enum PigeonSensorType {
@@ -152,6 +149,14 @@ enum PigeonSensorType {
 }
 
 class PigeonSensorTypeDevice {
+  PigeonSensorTypeDevice({
+    required this.sensorType,
+    required this.name,
+    required this.iso,
+    required this.flashAvailable,
+    required this.uid,
+  });
+
   final PigeonSensorType sensorType;
 
   /// A localized device name for display in the user interface.
@@ -165,17 +170,8 @@ class PigeonSensorTypeDevice {
 
   /// An identifier that uniquely identifies the device.
   final String uid;
-
-  PigeonSensorTypeDevice({
-    required this.sensorType,
-    required this.name,
-    required this.iso,
-    required this.flashAvailable,
-    required this.uid,
-  });
 }
 
-// TODO: instead of storing SensorTypeDevice values,
 // this would be useful when CameraX will support multiple sensors.
 // store them in a list of SensorTypeDevice.
 // ex:
@@ -183,6 +179,13 @@ class PigeonSensorTypeDevice {
 // List<SensorTypeDevice> ultraWideAngle;
 
 class PigeonSensorDeviceData {
+  PigeonSensorDeviceData({
+    this.wideAngle,
+    this.ultraWideAngle,
+    this.telephoto,
+    this.trueDepth,
+  });
+
   /// A built-in wide-angle camera.
   ///
   /// The wide angle sensor is the default sensor for iOS
@@ -198,13 +201,6 @@ class PigeonSensorDeviceData {
   ///
   /// iOS only
   PigeonSensorTypeDevice? trueDepth;
-
-  PigeonSensorDeviceData({
-    this.wideAngle,
-    this.ultraWideAngle,
-    this.telephoto,
-    this.trueDepth,
-  });
 
 // int get availableBackSensors => [
 //       wideAngle,
@@ -226,6 +222,8 @@ enum CamerAwesomePermission {
 }
 
 class AndroidFocusSettings {
+  AndroidFocusSettings({required this.autoCancelDurationInMillis});
+
   /// The auto focus will be canceled after the given [autoCancelDurationInMillis].
   /// If [autoCancelDurationInMillis] is equals to 0 (or less), the auto focus
   /// will **not** be canceled. A manual `focusOnPoint` call will be needed to
@@ -233,17 +231,9 @@ class AndroidFocusSettings {
   /// Minimal duration of [autoCancelDurationInMillis] is 1000 ms. If set
   /// between 0 (exclusive) and 1000 (exclusive), it will be raised to 1000.
   int autoCancelDurationInMillis;
-
-  AndroidFocusSettings({required this.autoCancelDurationInMillis});
 }
 
 class PlaneWrapper {
-  final Uint8List bytes;
-  final int bytesPerRow;
-  final int? bytesPerPixel;
-  final int? width;
-  final int? height;
-
   PlaneWrapper({
     required this.bytes,
     required this.bytesPerRow,
@@ -251,6 +241,12 @@ class PlaneWrapper {
     this.width,
     this.height,
   });
+
+  final Uint8List bytes;
+  final int bytesPerRow;
+  final int? bytesPerPixel;
+  final int? width;
+  final int? height;
 }
 
 enum AnalysisImageFormat { yuv_420, bgra8888, jpeg, nv21, unknown }
@@ -263,28 +259,20 @@ enum AnalysisRotation {
 }
 
 class CropRectWrapper {
-  final int left;
-  final int top;
-  final int width;
-  final int height;
-
   CropRectWrapper({
     required this.left,
     required this.top,
     required this.width,
     required this.height,
   });
+
+  final int left;
+  final int top;
+  final int width;
+  final int height;
 }
 
 class AnalysisImageWrapper {
-  final AnalysisImageFormat format;
-  final Uint8List? bytes;
-  final int width;
-  final int height;
-  final List<PlaneWrapper?>? planes;
-  final CropRectWrapper? cropRect;
-  final AnalysisRotation? rotation;
-
   AnalysisImageWrapper({
     required this.format,
     required this.bytes,
@@ -294,6 +282,14 @@ class AnalysisImageWrapper {
     required this.cropRect,
     required this.rotation,
   });
+
+  final AnalysisImageFormat format;
+  final Uint8List? bytes;
+  final int width;
+  final int height;
+  final List<PlaneWrapper?>? planes;
+  final CropRectWrapper? cropRect;
+  final AnalysisRotation? rotation;
 }
 
 @HostApi()
@@ -345,7 +341,7 @@ abstract class CameraInterface {
 
   int getPreviewTextureId(int cameraPosition);
 
-  // TODO async with void return type seems to not work (channel-error)
+  // TODOasync with void return type seems to not work (channel-error)
   @async
   bool takePhoto(List<PigeonSensor> sensors, List<String?> paths);
 
@@ -388,7 +384,6 @@ abstract class CameraInterface {
 
   void setMirrorFrontCamera(bool mirror);
 
-  // TODO: specify the position of the sensor
   void setSensor(List<PigeonSensor> sensors);
 
   void setCorrection(double brightness);

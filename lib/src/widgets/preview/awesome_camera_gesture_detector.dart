@@ -1,54 +1,47 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:camerawesome/pigeon.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/pigeon.dart";
+import "package:camera_awesome/src/widgets/preview/awesome_focus_indicator.dart";
+import "package:flutter/gestures.dart";
+import "package:flutter/material.dart";
 
-import 'package:camerawesome/src/widgets/preview/awesome_focus_indicator.dart';
-
-Widget _awesomeFocusBuilder(Offset tapPosition) {
-  return AwesomeFocusIndicator(position: tapPosition);
-}
+Widget _awesomeFocusBuilder(Offset tapPosition) => AwesomeFocusIndicator(position: tapPosition);
 
 class OnPreviewTapBuilder {
-  // Use getters instead of storing the direct value to retrieve the data onTap
-  final PreviewSize Function() pixelPreviewSizeGetter;
-  final PreviewSize Function() flutterPreviewSizeGetter;
-  final OnPreviewTap onPreviewTap;
 
   const OnPreviewTapBuilder({
     required this.pixelPreviewSizeGetter,
     required this.flutterPreviewSizeGetter,
     required this.onPreviewTap,
   });
+  // Use getters instead of storing the direct value to retrieve the data onTap
+  final PreviewSize Function() pixelPreviewSizeGetter;
+  final PreviewSize Function() flutterPreviewSizeGetter;
+  final OnPreviewTap onPreviewTap;
 }
 
 class OnPreviewTap {
-  final Function(Offset position, PreviewSize flutterPreviewSize,
-      PreviewSize pixelPreviewSize) onTap;
-  final Widget Function(Offset tapPosition)? onTapPainter;
-  final Duration? tapPainterDuration;
 
   const OnPreviewTap({
     required this.onTap,
     this.onTapPainter = _awesomeFocusBuilder,
     this.tapPainterDuration = const Duration(milliseconds: 2000),
   });
+  final Function(Offset position, PreviewSize flutterPreviewSize,
+      PreviewSize pixelPreviewSize,) onTap;
+  final Widget Function(Offset tapPosition)? onTapPainter;
+  final Duration? tapPainterDuration;
 }
 
 class OnPreviewScale {
-  final Function(double scale) onScale;
 
   const OnPreviewScale({
     required this.onScale,
   });
+  final Function(double scale) onScale;
 }
 
 class AwesomeCameraGestureDetector extends StatefulWidget {
-  final Widget child;
-  final OnPreviewTapBuilder? onPreviewTapBuilder;
-  final OnPreviewScale? onPreviewScale;
-  final double initialZoom;
 
   const AwesomeCameraGestureDetector({
     super.key,
@@ -57,11 +50,13 @@ class AwesomeCameraGestureDetector extends StatefulWidget {
     this.onPreviewTapBuilder,
     this.initialZoom = 0,
   });
+  final Widget child;
+  final OnPreviewTapBuilder? onPreviewTapBuilder;
+  final OnPreviewScale? onPreviewScale;
+  final double initialZoom;
 
   @override
-  State<StatefulWidget> createState() {
-    return _AwesomeCameraGestureDetector();
-  }
+  State<StatefulWidget> createState() => _AwesomeCameraGestureDetector();
 }
 
 class _AwesomeCameraGestureDetector
@@ -80,8 +75,7 @@ class _AwesomeCameraGestureDetector
   }
 
   @override
-  Widget build(BuildContext context) {
-    return RawGestureDetector(
+  Widget build(BuildContext context) => RawGestureDetector(
       gestures: <Type, GestureRecognizerFactory>{
         if (widget.onPreviewScale != null)
           ScaleGestureRecognizer:
@@ -105,13 +99,13 @@ class _AwesomeCameraGestureDetector
                 widget.onPreviewScale!.onScale(_zoomScale);
                 _lastScale = details.scale;
               },
-            (instance) {},
+            (ScaleGestureRecognizer instance) {},
           ),
         if (widget.onPreviewTapBuilder != null)
           TapGestureRecognizer:
               GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
             () => TapGestureRecognizer()
-              ..onTapUp = (details) {
+              ..onTapUp = (TapUpDetails details) {
                 if (widget
                         .onPreviewTapBuilder!.onPreviewTap.tapPainterDuration !=
                     null) {
@@ -133,20 +127,19 @@ class _AwesomeCameraGestureDetector
                   widget.onPreviewTapBuilder!.pixelPreviewSizeGetter(),
                 );
               },
-            (instance) {},
+            (TapGestureRecognizer instance) {},
           ),
       },
-      child: Stack(children: [
+      child: Stack(children: <Widget>[
         Positioned.fill(child: widget.child),
         if (_tapPosition != null &&
             widget.onPreviewTapBuilder?.onPreviewTap.onTapPainter != null)
           widget.onPreviewTapBuilder!.onPreviewTap.onTapPainter!(_tapPosition!),
-      ]),
+      ],),
     );
-  }
 
   @override
-  dispose() {
+  void dispose() {
     _timer?.cancel();
     super.dispose();
   }

@@ -1,14 +1,9 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
 
 class Preview {
-  final Size nativePreviewSize;
-  final Size previewSize;
-  final Offset offset;
-  final double scale;
-  final Sensor? sensor;
 
   Preview({
     required this.nativePreviewSize,
@@ -25,11 +20,14 @@ class Preview {
         scale: 1,
         sensor: null,
       );
+  final Size nativePreviewSize;
+  final Size previewSize;
+  final Offset offset;
+  final double scale;
+  final Sensor? sensor;
 
-  Offset convertPoint(Offset point) {
-    return Offset(point.dx * scale, point.dy * scale)
+  Offset convertPoint(Offset point) => Offset(point.dx * scale, point.dy * scale)
         .translate(offset.dx, offset.dy);
-  }
 
   /// this method is used to convert a point from an image to the preview
   /// according to the current preview size and the image size
@@ -41,7 +39,7 @@ class Preview {
   }) {
     num imageDiffX;
     num imageDiffY;
-    final shouldflipXY = flipXY ?? img.flipXY();
+    final bool shouldflipXY = flipXY ?? img.flipXY();
     if (Platform.isIOS) {
       imageDiffX = img.size.width - img.croppedSize.width;
       imageDiffY = img.size.height - img.croppedSize.height;
@@ -50,10 +48,10 @@ class Preview {
       imageDiffX = img.size.height - img.croppedSize.width;
       imageDiffY = img.size.width - img.croppedSize.height;
     }
-    var offset = (Offset(
-              (shouldflipXY ? point.dy : point.dx).toDouble() -
+    final Offset offset = (Offset(
+              (shouldflipXY ? point.dy : point.dx) -
                   (imageDiffX / 2),
-              (shouldflipXY ? point.dx : point.dy).toDouble() -
+              (shouldflipXY ? point.dx : point.dy) -
                   (imageDiffY / 2),
             ) *
             scale)

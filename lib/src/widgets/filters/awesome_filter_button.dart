@@ -1,16 +1,12 @@
-import 'package:camerawesome/src/orchestrator/models/camera_flashes.dart';
-import 'package:camerawesome/src/orchestrator/models/sensor_config.dart';
-import 'package:camerawesome/src/orchestrator/states/camera_state.dart';
-import 'package:camerawesome/src/widgets/utils/awesome_circle_icon.dart';
-import 'package:camerawesome/src/widgets/utils/awesome_oriented_widget.dart';
-import 'package:camerawesome/src/widgets/utils/awesome_theme.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/src/orchestrator/models/camera_flashes.dart";
+import "package:camera_awesome/src/orchestrator/models/sensor_config.dart";
+import "package:camera_awesome/src/orchestrator/states/camera_state.dart";
+import "package:camera_awesome/src/widgets/utils/awesome_circle_icon.dart";
+import "package:camera_awesome/src/widgets/utils/awesome_oriented_widget.dart";
+import "package:camera_awesome/src/widgets/utils/awesome_theme.dart";
+import "package:flutter/material.dart";
 
 class AwesomeFilterButton extends StatelessWidget {
-  final CameraState state;
-  final AwesomeTheme? theme;
-  final Widget Function() iconBuilder;
-  final void Function() onFilterTap;
 
   AwesomeFilterButton({
     super.key,
@@ -19,27 +15,29 @@ class AwesomeFilterButton extends StatelessWidget {
     Widget Function()? iconBuilder,
     final void Function()? onFilterTap,
   })  : iconBuilder = iconBuilder ??
-            (() {
-              return AwesomeCircleWidget.icon(
+            (() => AwesomeCircleWidget.icon(
                 icon: Icons.filter_rounded,
                 theme: theme,
-              );
-            }),
-        onFilterTap = onFilterTap ?? (() => state.toggleFilterSelector());
+              )),
+        onFilterTap = onFilterTap ?? (state.toggleFilterSelector);
+  final CameraState state;
+  final AwesomeTheme? theme;
+  final Widget Function() iconBuilder;
+  final void Function() onFilterTap;
 
   @override
   Widget build(BuildContext context) {
-    final theme = this.theme ?? AwesomeThemeProvider.of(context).theme;
+    final AwesomeTheme theme = this.theme ?? AwesomeThemeProvider.of(context).theme;
     return StreamBuilder<SensorConfig>(
       stream: state.sensorConfig$,
-      builder: (_, sensorConfigSnapshot) {
+      builder: (_, AsyncSnapshot<SensorConfig> sensorConfigSnapshot) {
         if (!sensorConfigSnapshot.hasData) {
           return const SizedBox.shrink();
         }
-        final sensorConfig = sensorConfigSnapshot.requireData;
+        final SensorConfig sensorConfig = sensorConfigSnapshot.requireData;
         return StreamBuilder<FlashMode>(
           stream: sensorConfig.flashMode$,
-          builder: (context, snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<FlashMode> snapshot) {
             if (!snapshot.hasData) {
               return const SizedBox.shrink();
             }
@@ -48,7 +46,7 @@ class AwesomeFilterButton extends StatelessWidget {
               rotateWithDevice: theme.buttonTheme.rotateWithCamera,
               child: theme.buttonTheme.buttonBuilder(
                 iconBuilder(),
-                () => onFilterTap(),
+                onFilterTap,
               ),
             );
           },

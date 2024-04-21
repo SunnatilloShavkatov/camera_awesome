@@ -1,20 +1,18 @@
-import 'dart:math';
+import "dart:math";
 
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:camerawesome/pigeon.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:camera_awesome/pigeon.dart";
+import "package:flutter/material.dart";
 
 /// Tap to take a photo example, with almost no UI
 class CustomUiExample2 extends StatelessWidget {
   const CustomUiExample2({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       body: CameraAwesomeBuilder.custom(
-        builder: (cameraState, preview) {
-          return Stack(
-            children: [
+        builder: (CameraState cameraState, Preview preview) => Stack(
+            children: <Widget>[
               const Positioned.fill(
                 child: Align(
                   alignment: Alignment.bottomCenter,
@@ -34,12 +32,12 @@ class CustomUiExample2 extends StatelessWidget {
                     width: 100,
                     child: StreamBuilder<MediaCapture?>(
                       stream: cameraState.captureState$,
-                      builder: (_, snapshot) {
+                      builder: (_, AsyncSnapshot<MediaCapture?> snapshot) {
                         if (snapshot.data == null) {
                           return const SizedBox.shrink();
                         }
                         return AwesomeMediaPreview(
-                          mediaCapture: snapshot.data!,
+                          mediaCapture: snapshot.data,
                           onMediaTap: (MediaCapture mediaCapture) {
                             // ignore: avoid_print
                             print("Tap on $mediaCapture");
@@ -51,27 +49,24 @@ class CustomUiExample2 extends StatelessWidget {
                 ),
               ),
             ],
-          );
-        },
+          ),
         saveConfig: SaveConfig.photo(),
-        onPreviewTapBuilder: (state) => OnPreviewTap(
+        onPreviewTapBuilder: (CameraState state) => OnPreviewTap(
           onTap: (Offset position, PreviewSize flutterPreviewSize,
-              PreviewSize pixelPreviewSize) {
-            state.when(onPhotoMode: (picState) => picState.takePhoto());
+              PreviewSize pixelPreviewSize,) {
+            state.when(onPhotoMode: (PhotoCameraState picState) => picState.takePhoto());
           },
-          onTapPainter: (tapPosition) => TweenAnimationBuilder(
+          onTapPainter: (Offset tapPosition) => TweenAnimationBuilder(
             key: ValueKey(tapPosition),
-            tween: Tween<double>(begin: 1.0, end: 0.0),
+            tween: Tween<double>(begin: 1, end: 0),
             duration: const Duration(milliseconds: 500),
-            builder: (context, anim, child) {
-              return Transform.rotate(
+            builder: (BuildContext context, double anim, Widget? child) => Transform.rotate(
                 angle: anim * 2 * pi,
                 child: Transform.scale(
                   scale: 4 * anim,
                   child: child,
                 ),
-              );
-            },
+              ),
             child: const Icon(
               Icons.camera,
               color: Colors.white,
@@ -80,5 +75,4 @@ class CustomUiExample2 extends StatelessWidget {
         ),
       ),
     );
-  }
 }

@@ -1,13 +1,15 @@
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
+// ignore_for_file: discarded_futures
+
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
 
 class AwesomeZoomSelector extends StatefulWidget {
-  final CameraState state;
-
   const AwesomeZoomSelector({
     super.key,
     required this.state,
   });
+
+  final CameraState state;
 
   @override
   State<AwesomeZoomSelector> createState() => _AwesomeZoomSelectorState();
@@ -23,49 +25,45 @@ class _AwesomeZoomSelectorState extends State<AwesomeZoomSelector> {
     initAsync();
   }
 
-  initAsync() async {
+  Future<void> initAsync() async {
     minZoom = await CamerawesomePlugin.getMinZoom();
     maxZoom = await CamerawesomePlugin.getMaxZoom();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<SensorConfig>(
-      stream: widget.state.sensorConfig$,
-      builder: (context, sensorConfigSnapshot) {
-        initAsync();
-        if (sensorConfigSnapshot.data == null ||
-            minZoom == null ||
-            maxZoom == null) {
-          return const SizedBox.shrink();
-        }
+  Widget build(BuildContext context) => StreamBuilder<SensorConfig>(
+        stream: widget.state.sensorConfig$,
+        builder: (
+          BuildContext context,
+          AsyncSnapshot<SensorConfig> sensorConfigSnapshot,
+        ) {
+          initAsync();
+          if (sensorConfigSnapshot.data == null ||
+              minZoom == null ||
+              maxZoom == null) {
+            return const SizedBox.shrink();
+          }
 
-        return StreamBuilder<double>(
-          stream: sensorConfigSnapshot.requireData.zoom$,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return _ZoomIndicatorLayout(
-                zoom: snapshot.requireData,
-                min: minZoom!,
-                max: maxZoom!,
-                sensorConfig: widget.state.sensorConfig,
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          },
-        );
-      },
-    );
-  }
+          return StreamBuilder<double>(
+            stream: sensorConfigSnapshot.requireData.zoom$,
+            builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+              if (snapshot.hasData) {
+                return _ZoomIndicatorLayout(
+                  zoom: snapshot.requireData,
+                  min: minZoom!,
+                  max: maxZoom!,
+                  sensorConfig: widget.state.sensorConfig,
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          );
+        },
+      );
 }
 
 class _ZoomIndicatorLayout extends StatelessWidget {
-  final double zoom;
-  final double min;
-  final double max;
-  final SensorConfig sensorConfig;
-
   const _ZoomIndicatorLayout({
     required this.zoom,
     required this.min,
@@ -73,13 +71,17 @@ class _ZoomIndicatorLayout extends StatelessWidget {
     required this.sensorConfig,
   });
 
+  final double zoom;
+  final double min;
+  final double max;
+  final SensorConfig sensorConfig;
+
   @override
   Widget build(BuildContext context) {
-    final displayZoom = (max - min) * zoom + min;
+    final double displayZoom = (max - min) * zoom + min;
     if (min == 1.0) {
-      // Assume there's only one lens for zooming purpose, only display current zoom
       return _ZoomIndicator(
-        normalValue: 0.0,
+        normalValue: 0,
         zoom: zoom,
         selected: true,
         min: min,
@@ -90,11 +92,11 @@ class _ZoomIndicatorLayout extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: <Widget>[
         // Show 3 dots for zooming: min, 1.0X and max zoom. The closer one shows
         // text, the other ones a dot.
         _ZoomIndicator(
-          normalValue: 0.0,
+          normalValue: 0,
           zoom: zoom,
           selected: displayZoom < 1.0,
           min: min,
@@ -113,7 +115,7 @@ class _ZoomIndicatorLayout extends StatelessWidget {
           ),
         ),
         _ZoomIndicator(
-          normalValue: 1.0,
+          normalValue: 1,
           zoom: zoom,
           selected: displayZoom == max,
           min: min,
@@ -126,13 +128,6 @@ class _ZoomIndicatorLayout extends StatelessWidget {
 }
 
 class _ZoomIndicator extends StatelessWidget {
-  final double zoom;
-  final double min;
-  final double max;
-  final double normalValue;
-  final SensorConfig sensorConfig;
-  final bool selected;
-
   const _ZoomIndicator({
     required this.zoom,
     required this.min,
@@ -142,25 +137,31 @@ class _ZoomIndicator extends StatelessWidget {
     required this.selected,
   });
 
+  final double zoom;
+  final double min;
+  final double max;
+  final double normalValue;
+  final SensorConfig sensorConfig;
+  final bool selected;
+
   @override
   Widget build(BuildContext context) {
-    final baseTheme = AwesomeThemeProvider.of(context).theme;
-    final baseButtonTheme = baseTheme.buttonTheme;
-    final displayZoom = (max - min) * zoom + min;
-    Widget content = AnimatedSwitcher(
+    final AwesomeTheme baseTheme = AwesomeThemeProvider.of(context).theme;
+    final AwesomeButtonTheme baseButtonTheme = baseTheme.buttonTheme;
+    final double displayZoom = (max - min) * zoom + min;
+    final Widget content = AnimatedSwitcher(
       duration: const Duration(milliseconds: 100),
-      transitionBuilder: (child, anim) {
-        return ScaleTransition(scale: anim, child: child);
-      },
+      transitionBuilder: (Widget child, Animation<double> anim) =>
+          ScaleTransition(scale: anim, child: child),
       child: selected
           ? AwesomeBouncingWidget(
-              key: ValueKey("zoomIndicator_${normalValue}_selected"),
+              key: ValueKey<String>("zoomIndicator_${normalValue}_selected"),
               onTap: () {
                 sensorConfig.setZoom(normalValue);
               },
               child: Container(
                 color: Colors.transparent,
-                padding: const EdgeInsets.all(0.0),
+                padding: EdgeInsets.zero,
                 child: AwesomeCircleWidget(
                   theme: baseTheme,
                   child: Text(
@@ -171,13 +172,13 @@ class _ZoomIndicator extends StatelessWidget {
               ),
             )
           : AwesomeBouncingWidget(
-              key: ValueKey("zoomIndicator_${normalValue}_unselected"),
+              key: ValueKey<String>("zoomIndicator_${normalValue}_unselected"),
               onTap: () {
                 sensorConfig.setZoom(normalValue);
               },
               child: Container(
                 color: Colors.transparent,
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: AwesomeCircleWidget(
                   theme: baseTheme.copyWith(
                     buttonTheme: baseButtonTheme.copyWith(

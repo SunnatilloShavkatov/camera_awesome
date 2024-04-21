@@ -1,17 +1,20 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:camerawesome/src/orchestrator/analysis/analysis_controller.dart';
-import 'package:camerawesome/src/orchestrator/states/camera_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import "package:camera_awesome/src/orchestrator/analysis/analysis_controller.dart";
+import "package:camera_awesome/src/orchestrator/states/camera_state.dart";
+import "package:camera_awesome/src/orchestrator/states/photo_camera_state.dart";
+import "package:camera_awesome/src/orchestrator/states/video_camera_recording_state.dart";
+import "package:camera_awesome/src/orchestrator/states/video_camera_state.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 class AwesomeCaptureButton extends StatefulWidget {
-  final CameraState state;
 
   const AwesomeCaptureButton({
     super.key,
     required this.state,
   });
+  final CameraState state;
 
   @override
   _AwesomeCaptureButtonState createState() => _AwesomeCaptureButtonState();
@@ -30,7 +33,6 @@ class _AwesomeCaptureButtonState extends State<AwesomeCaptureButton>
     _animationController = AnimationController(
       vsync: this,
       duration: _duration,
-      lowerBound: 0.0,
       upperBound: 0.1,
     )..addListener(() {
         setState(() {});
@@ -55,7 +57,7 @@ class _AwesomeCaptureButtonState extends State<AwesomeCaptureButton>
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
       child: SizedBox(
-        key: const ValueKey('cameraButton'),
+        key: const ValueKey("cameraButton"),
         height: 80,
         width: 80,
         child: Transform.scale(
@@ -74,12 +76,12 @@ class _AwesomeCaptureButtonState extends State<AwesomeCaptureButton>
     );
   }
 
-  _onTapDown(TapDownDetails details) {
+  void _onTapDown(TapDownDetails details) {
     HapticFeedback.selectionClick();
     _animationController.forward();
   }
 
-  _onTapUp(TapUpDetails details) {
+  void _onTapUp(TapUpDetails details) {
     Future.delayed(_duration, () {
       _animationController.reverse();
     });
@@ -87,15 +89,15 @@ class _AwesomeCaptureButtonState extends State<AwesomeCaptureButton>
     onTap.call();
   }
 
-  _onTapCancel() {
+  void _onTapCancel() {
     _animationController.reverse();
   }
 
-  get onTap => () {
+  Null Function() get onTap => () {
         widget.state.when(
-          onPhotoMode: (photoState) => photoState.takePhoto(),
-          onVideoMode: (videoState) => videoState.startRecording(),
-          onVideoRecordingMode: (videoState) => videoState.stopRecording(),
+          onPhotoMode: (PhotoCameraState photoState) => photoState.takePhoto(),
+          onVideoMode: (VideoCameraState videoState) => videoState.startRecording(),
+          onVideoRecordingMode: (VideoRecordingCameraState videoState) => videoState.stopRecording(),
         );
       };
 }
@@ -105,11 +107,11 @@ class CameraButtonPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var bgPainter = Paint()
+    final Paint bgPainter = Paint()
       ..style = PaintingStyle.fill
       ..isAntiAlias = true;
-    var radius = size.width / 2;
-    var center = Offset(size.width / 2, size.height / 2);
+    final double radius = size.width / 2;
+    final Offset center = Offset(size.width / 2, size.height / 2);
     bgPainter.color = Colors.white.withOpacity(.5);
     canvas.drawCircle(center, radius, bgPainter);
 
@@ -122,19 +124,19 @@ class CameraButtonPainter extends CustomPainter {
 }
 
 class VideoButtonPainter extends CustomPainter {
-  final bool isRecording;
 
   VideoButtonPainter({
     this.isRecording = false,
   });
+  final bool isRecording;
 
   @override
   void paint(Canvas canvas, Size size) {
-    var bgPainter = Paint()
+    final Paint bgPainter = Paint()
       ..style = PaintingStyle.fill
       ..isAntiAlias = true;
-    var radius = size.width / 2;
-    var center = Offset(size.width / 2, size.height / 2);
+    final double radius = size.width / 2;
+    final Offset center = Offset(size.width / 2, size.height / 2);
     bgPainter.color = Colors.white.withOpacity(.5);
     canvas.drawCircle(center, radius, bgPainter);
 
@@ -148,8 +150,8 @@ class VideoButtonPainter extends CustomPainter {
                 size.width - (17 * 2),
                 size.height - (17 * 2),
               ),
-              const Radius.circular(12.0)),
-          bgPainter);
+              const Radius.circular(12),),
+          bgPainter,);
     } else {
       bgPainter.color = Colors.red;
       canvas.drawCircle(center, radius - 8, bgPainter);

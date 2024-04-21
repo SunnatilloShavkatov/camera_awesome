@@ -1,12 +1,13 @@
-import 'dart:ui';
+// ignore_for_file: comment_references, only_throw_errors, discarded_futures
+import "dart:ui";
 
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:camerawesome/pigeon.dart';
-import 'package:camerawesome/src/orchestrator/camera_context.dart';
-import 'package:camerawesome/src/orchestrator/states/handlers/filter_handler.dart';
-import 'package:camerawesome/src/photofilters/filters/filters.dart';
-import 'package:collection/collection.dart';
-import 'package:rxdart/rxdart.dart';
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:camera_awesome/pigeon.dart";
+import "package:camera_awesome/src/orchestrator/camera_context.dart";
+import "package:camera_awesome/src/orchestrator/states/handlers/filter_handler.dart";
+import "package:camera_awesome/src/photofilters/filters/filters.dart";
+import "package:collection/collection.dart";
+import "package:rxdart/rxdart.dart";
 
 class PhotoFilterModel {
   PhotoFilterModel(this.captureRequest, this.filter);
@@ -16,9 +17,9 @@ class PhotoFilterModel {
 }
 
 /// Callback to get the CaptureRequest after the photo has been taken
-typedef OnPhotoCallback = Function(CaptureRequest request);
+typedef OnPhotoCallback = void Function(CaptureRequest request);
 
-typedef OnPhotoFailedCallback = Function(Exception exception);
+typedef OnPhotoFailedCallback = void Function(Exception exception);
 
 /// When Camera is in Image mode
 class PhotoCameraState extends CameraState {
@@ -48,7 +49,7 @@ class PhotoCameraState extends CameraState {
   bool get saveGpsLocation => _saveGpsLocationController.value;
 
   Future<void> shouldSaveGpsLocation(bool saveGPS) async {
-    final isGranted = await CamerawesomePlugin.setExifPreferences(
+    final bool isGranted = await CamerawesomePlugin.setExifPreferences(
       ExifPreferences(saveGPSLocation: saveGPS),
     );
 
@@ -71,18 +72,20 @@ class PhotoCameraState extends CameraState {
     OnPhotoCallback? onPhoto,
     OnPhotoFailedCallback? onPhotoFailed,
   }) async {
-    CaptureRequest captureRequest =
+    final CaptureRequest captureRequest =
         await filePathBuilder(sensorConfig.sensors.whereNotNull().toList());
-    final mediaCapture = MediaCapture.capturing(captureRequest: captureRequest);
+    final MediaCapture mediaCapture =
+        MediaCapture.capturing(captureRequest: captureRequest);
     if (!mediaCapture.isPicture) {
-      throw ("CaptureRequest must be a picture. ${captureRequest.when(
-        single: (single) => single.file!.path,
-        multiple: (multiple) => multiple.fileBySensor.values.first!.path,
-      )}");
+      throw "CaptureRequest must be a picture. ${captureRequest.when(
+        single: (SingleCaptureRequest single) => single.file!.path,
+        multiple: (MultipleCaptureRequest multiple) =>
+            multiple.fileBySensor.values.first!.path,
+      )}";
     }
     _mediaCapture = mediaCapture;
     try {
-      final succeeded = await CamerawesomePlugin.takePhoto(captureRequest);
+      final bool succeeded = await CamerawesomePlugin.takePhoto(captureRequest);
       if (succeeded) {
         await FilterHandler().apply(
           captureRequest: captureRequest,
@@ -130,7 +133,7 @@ class PhotoCameraState extends CameraState {
     _saveGpsLocationController.close();
   }
 
-  focus() {
+  void focus() {
     cameraContext.focus();
   }
 
@@ -139,12 +142,11 @@ class PhotoCameraState extends CameraState {
     required PreviewSize pixelPreviewSize,
     required PreviewSize flutterPreviewSize,
     AndroidFocusSettings? androidFocusSettings,
-  }) {
-    return cameraContext.focusOnPoint(
-      flutterPosition: flutterPosition,
-      pixelPreviewSize: pixelPreviewSize,
-      flutterPreviewSize: flutterPreviewSize,
-      androidFocusSettings: androidFocusSettings,
-    );
-  }
+  }) =>
+      cameraContext.focusOnPoint(
+        flutterPosition: flutterPosition,
+        pixelPreviewSize: pixelPreviewSize,
+        flutterPreviewSize: flutterPreviewSize,
+        androidFocusSettings: androidFocusSettings,
+      );
 }

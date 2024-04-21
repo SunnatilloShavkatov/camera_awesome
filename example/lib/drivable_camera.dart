@@ -1,28 +1,26 @@
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
 
 class DrivableCamera extends StatelessWidget {
-  final SaveConfig saveConfig;
-  final List<Sensor> sensors;
 
   const DrivableCamera({
     super.key,
     required this.saveConfig,
     required this.sensors,
   });
+  final SaveConfig saveConfig;
+  final List<Sensor> sensors;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) => MaterialApp(
       home: Scaffold(
         body: CameraAwesomeBuilder.awesome(
           saveConfig: saveConfig,
-          onMediaTap: (media) {},
+          onMediaTap: (MediaCapture media) {},
           sensorConfig: sensors.length == 1
               ? SensorConfig.single(sensor: sensors.first)
               : SensorConfig.multiple(sensors: sensors),
         ),
       ),
     );
-  }
 }

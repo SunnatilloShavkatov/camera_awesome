@@ -1,6 +1,6 @@
-import 'package:camera_app/utils/file_utils.dart';
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
+import "package:camera_app/utils/file_utils.dart";
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
 
 void main() {
   runApp(const CameraAwesomeApp());
@@ -10,23 +10,20 @@ class CameraAwesomeApp extends StatelessWidget {
   const CameraAwesomeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Themed CamerAwesome',
+  Widget build(BuildContext context) => const MaterialApp(
+      title: "Themed CamerAwesome",
       home: CameraPage(),
     );
-  }
 }
 
 class CameraPage extends StatelessWidget {
   const CameraPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       body: CameraAwesomeBuilder.awesome(
         saveConfig: SaveConfig.photoAndVideo(
-          initialCaptureMode: CaptureMode.photo,
+          
         ),
         defaultFilter: AwesomeFilter.AddictiveRed,
         sensorConfig: SensorConfig.single(
@@ -42,8 +39,7 @@ class CameraPage extends StatelessWidget {
             padding: const EdgeInsets.all(18),
             foregroundColor: Colors.lightBlue,
             // Tap visual feedback (ripple, bounce...)
-            buttonBuilder: (child, onTap) {
-              return ClipOval(
+            buttonBuilder: (Widget child, onTap) => ClipOval(
                 child: Material(
                   color: Colors.transparent,
                   shape: const CircleBorder(),
@@ -54,15 +50,13 @@ class CameraPage extends StatelessWidget {
                     child: child,
                   ),
                 ),
-              );
-            },
+              ),
           ),
         ),
-        onMediaTap: (mediaCapture) {
+        onMediaTap: (MediaCapture mediaCapture) {
           mediaCapture.captureRequest
-              .when(single: (single) => single.file?.open());
+              .when(single: (SingleCaptureRequest single) => single.file?.open());
         },
       ),
     );
-  }
 }

@@ -1,17 +1,17 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, discarded_futures
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 class AwesomeBouncingWidget extends StatefulWidget {
   const AwesomeBouncingWidget({
-    Key? key,
+    super.key,
     required this.child,
     this.onTap,
     this.disabledOpacity = 0.3,
     this.vibrationEnabled = true,
     this.duration = const Duration(milliseconds: 100),
-  }) : super(key: key);
+  });
 
   final Widget child;
   final VoidCallback? onTap;
@@ -33,7 +33,6 @@ class _AwesomeBouncingWidgetState extends State<AwesomeBouncingWidget>
     _controller = AnimationController(
       vsync: this,
       duration: widget.duration,
-      lowerBound: 0.0,
       upperBound: 0.1,
     )..addListener(() {
         setState(() {});
@@ -72,16 +71,19 @@ class _AwesomeBouncingWidgetState extends State<AwesomeBouncingWidget>
   }
 
   void _onTapDown(TapDownDetails details) {
-    if (widget.vibrationEnabled == true) {
+    if (widget.vibrationEnabled ?? false) {
       HapticFeedback.selectionClick();
     }
     _controller?.forward.call();
   }
 
   void _onTapUp(TapUpDetails details) {
-    Future.delayed(widget.duration, () {
-      _controller?.reverse.call();
-    });
+    Future<void>.delayed(
+      widget.duration,
+      () {
+        _controller?.reverse.call();
+      },
+    );
     widget.onTap?.call();
   }
 

@@ -1,17 +1,15 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import "package:flutter/material.dart";
+import "package:video_player/video_player.dart";
 
 class MiniVideoPlayer extends StatefulWidget {
-  final String filePath;
 
   const MiniVideoPlayer({super.key, required this.filePath});
+  final String filePath;
 
   @override
-  State<StatefulWidget> createState() {
-    return _MiniVideoPlayer();
-  }
+  State<StatefulWidget> createState() => _MiniVideoPlayer();
 }
 
 class _MiniVideoPlayer extends State<MiniVideoPlayer> {
@@ -23,7 +21,7 @@ class _MiniVideoPlayer extends State<MiniVideoPlayer> {
       ..initialize().then((value) => setState(() {
             _controller?.setLooping(true);
             _controller?.play();
-          }));
+          }),);
     super.initState();
   }
 

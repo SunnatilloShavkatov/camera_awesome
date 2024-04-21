@@ -1,11 +1,11 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:camera_app/utils/file_utils.dart';
-import 'package:camera_app/utils/mlkit_utils.dart';
-import 'package:camera_app/widgets/barcode_preview_overlay.dart';
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
-import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import "package:camera_app/utils/file_utils.dart";
+import "package:camera_app/utils/mlkit_utils.dart";
+import "package:camera_app/widgets/barcode_preview_overlay.dart";
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
+import "package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart";
 
 void main() {
   runApp(const CameraAwesomeApp());
@@ -15,12 +15,10 @@ class CameraAwesomeApp extends StatelessWidget {
   const CameraAwesomeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Preview Overlay',
-      home: CameraPage(),
-    );
-  }
+  Widget build(BuildContext context) => const MaterialApp(
+        title: "Preview Overlay",
+        home: CameraPage(),
+      );
 }
 
 class CameraPage extends StatefulWidget {
@@ -31,50 +29,42 @@ class CameraPage extends StatefulWidget {
 }
 
 class _CameraPageState extends State<CameraPage> {
-  final _barcodeScanner = BarcodeScanner(formats: [BarcodeFormat.all]);
-  List<Barcode> _barcodes = [];
+  final BarcodeScanner _barcodeScanner =
+      BarcodeScanner(formats: <BarcodeFormat>[BarcodeFormat.all]);
+  List<Barcode> _barcodes = <Barcode>[];
   AnalysisImage? _image;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: CameraAwesomeBuilder.awesome(
-        saveConfig: SaveConfig.photoAndVideo(
-          initialCaptureMode: CaptureMode.photo,
-        ),
-        sensorConfig: SensorConfig.single(
-          flashMode: FlashMode.auto,
-          aspectRatio: CameraAspectRatios.ratio_16_9,
-        ),
-        previewFit: CameraPreviewFit.fitWidth,
-        onMediaTap: (mediaCapture) {
-          mediaCapture.captureRequest
-              .when(single: (single) => single.file?.open());
-        },
-        previewDecoratorBuilder: (state, preview) {
-          return BarcodePreviewOverlay(
+  Widget build(BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
+        body: CameraAwesomeBuilder.awesome(
+          saveConfig: SaveConfig.photoAndVideo(),
+          sensorConfig: SensorConfig.single(
+            flashMode: FlashMode.auto,
+            aspectRatio: CameraAspectRatios.ratio_16_9,
+          ),
+          previewFit: CameraPreviewFit.fitWidth,
+          onMediaTap: (MediaCapture mediaCapture) {
+            mediaCapture.captureRequest.when(
+                single: (SingleCaptureRequest single) => single.file?.open(),);
+          },
+          previewDecoratorBuilder: (CameraState state, Preview preview) =>
+              BarcodePreviewOverlay(
             state: state,
             barcodes: _barcodes,
             analysisImage: _image,
             preview: preview,
-          );
-        },
-        topActionsBuilder: (state) {
-          return AwesomeTopActions(
+          ),
+          topActionsBuilder: (CameraState state) => AwesomeTopActions(
             state: state,
-            children: [
+            children: <Widget>[
               AwesomeFlashButton(state: state),
               if (state is PhotoCameraState)
                 AwesomeAspectRatioButton(state: state),
             ],
-          );
-        },
-        middleContentBuilder: (state) {
-          return const SizedBox.shrink();
-        },
-        bottomActionsBuilder: (state) {
-          return const Padding(
+          ),
+          middleContentBuilder: (CameraState state) => const SizedBox.shrink(),
+          bottomActionsBuilder: (CameraState state) => const Padding(
             padding: EdgeInsets.only(bottom: 20),
             child: Text(
               "Scan your barcodes",
@@ -83,28 +73,26 @@ class _CameraPageState extends State<CameraPage> {
                 fontSize: 30,
               ),
             ),
-          );
-        },
-        onImageForAnalysis: (img) => _processImageBarcode(img),
-        imageAnalysisConfig: AnalysisConfig(
-          androidOptions: const AndroidAnalysisOptions.nv21(
-            width: 256,
           ),
-          maxFramesPerSecond: 3,
+          onImageForAnalysis: _processImageBarcode,
+          imageAnalysisConfig: AnalysisConfig(
+            androidOptions: const AndroidAnalysisOptions.nv21(
+              width: 256,
+            ),
+            maxFramesPerSecond: 3,
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   Future _processImageBarcode(AnalysisImage img) async {
     try {
-      var recognizedBarCodes =
+      final List<Barcode> recognizedBarCodes =
           await _barcodeScanner.processImage(img.toInputImage());
       setState(() {
         _barcodes = recognizedBarCodes;
         _image = img;
       });
-    } catch (error) {
+    } on Exception catch (error) {
       debugPrint("...sending image resulted error $error");
     }
   }

@@ -1,26 +1,26 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:camerawesome/src/orchestrator/models/media_capture.dart';
-import 'package:camerawesome/src/widgets/camera_awesome_builder.dart';
-import 'package:camerawesome/src/widgets/utils/awesome_bouncing_widget.dart';
-import 'package:camerawesome/src/widgets/utils/awesome_oriented_widget.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import "package:camera_awesome/src/orchestrator/models/capture_request.dart";
+import "package:camera_awesome/src/orchestrator/models/media_capture.dart";
+import "package:camera_awesome/src/widgets/camera_awesome_builder.dart";
+import "package:camera_awesome/src/widgets/utils/awesome_bouncing_widget.dart";
+import "package:camera_awesome/src/widgets/utils/awesome_oriented_widget.dart";
+import "package:flutter/cupertino.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
 
 class AwesomeMediaPreview extends StatelessWidget {
-  final MediaCapture? mediaCapture;
-  final OnMediaTap onMediaTap;
 
   const AwesomeMediaPreview({
     super.key,
     required this.mediaCapture,
     required this.onMediaTap,
   });
+  final MediaCapture? mediaCapture;
+  final OnMediaTap onMediaTap;
 
   @override
-  Widget build(BuildContext context) {
-    return AwesomeOrientedWidget(
+  Widget build(BuildContext context) => AwesomeOrientedWidget(
       child: AspectRatio(
         aspectRatio: 1,
         child: AwesomeBouncingWidget(
@@ -44,7 +44,6 @@ class AwesomeMediaPreview extends StatelessWidget {
         ),
       ),
     );
-  }
 
   Widget _buildMedia(MediaCapture? mediaCapture) {
     switch (mediaCapture?.status) {
@@ -57,10 +56,10 @@ class AwesomeMediaPreview extends StatelessWidget {
                     color: Colors.white,
                   )
                 : const Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8),
                     child: CircularProgressIndicator(
                       color: Colors.white,
-                      strokeWidth: 2.0,
+                      strokeWidth: 2,
                     ),
                   ),
           ),
@@ -68,14 +67,14 @@ class AwesomeMediaPreview extends StatelessWidget {
       case MediaCaptureStatus.success:
         if (mediaCapture!.isPicture) {
           if (kIsWeb) {
-            // TODO Check if that works
+            // TODOCheck if that works
             return FutureBuilder<Uint8List>(
                 future: mediaCapture.captureRequest.when(
-                  single: (single) => single.file!.readAsBytes(),
-                  multiple: (multiple) =>
+                  single: (SingleCaptureRequest single) => single.file!.readAsBytes(),
+                  multiple: (MultipleCaptureRequest multiple) =>
                       multiple.fileBySensor.values.first!.readAsBytes(),
                 ),
-                builder: (_, snapshot) {
+                builder: (_, AsyncSnapshot<Uint8List> snapshot) {
                   if (snapshot.hasData) {
                     return Image.memory(
                       snapshot.requireData,
@@ -88,14 +87,14 @@ class AwesomeMediaPreview extends StatelessWidget {
                             color: Colors.white,
                           )
                         : const Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8),
                             child: CircularProgressIndicator(
                               color: Colors.white,
-                              strokeWidth: 2.0,
+                              strokeWidth: 2,
                             ),
                           );
                   }
-                });
+                },);
           } else {
             return Image(
               fit: BoxFit.cover,
@@ -103,8 +102,8 @@ class AwesomeMediaPreview extends StatelessWidget {
                 FileImage(
                   File(
                     mediaCapture.captureRequest.when(
-                      single: (single) => single.file!.path,
-                      multiple: (multiple) =>
+                      single: (SingleCaptureRequest single) => single.file!.path,
+                      multiple: (MultipleCaptureRequest multiple) =>
                           multiple.fileBySensor.values.first!.path,
                     ),
                   ),

@@ -1,48 +1,49 @@
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:camerawesome/pigeon.dart';
-import 'package:camerawesome/src/orchestrator/camera_context.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+// ignore_for_file: comment_references, discarded_futures
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:camera_awesome/pigeon.dart";
+import "package:camera_awesome/src/orchestrator/camera_context.dart";
+import "package:collection/collection.dart";
+import "package:flutter/foundation.dart";
 
-typedef OnVideoMode = Function(VideoCameraState);
+typedef OnVideoMode = void Function(VideoCameraState);
 
-typedef OnPhotoMode = Function(PhotoCameraState);
+typedef OnPhotoMode = void Function(PhotoCameraState);
 
-typedef OnPreparingCamera = Function(PreparingCameraState);
+typedef OnPreparingCamera = void Function(PreparingCameraState);
 
-typedef OnVideoRecordingMode = Function(VideoRecordingCameraState);
+typedef OnVideoRecordingMode = void Function(VideoRecordingCameraState);
 
-typedef OnPreviewMode = Function(PreviewCameraState);
+typedef OnPreviewMode = void Function(PreviewCameraState);
 
-typedef OnAnalysisOnlyMode = Function(AnalysisCameraState);
+typedef OnAnalysisOnlyMode = void Function(AnalysisCameraState);
 
 abstract class CameraState {
-  // TODO Make private
+  CameraState(this.cameraContext);
+
+  // TODOMake private
   @protected
   CameraContext cameraContext;
 
-  CameraState(this.cameraContext);
-
   abstract final CaptureMode? captureMode;
 
-  when({
+  dynamic when({
     OnVideoMode? onVideoMode,
     OnPhotoMode? onPhotoMode,
     OnPreparingCamera? onPreparingCamera,
     OnVideoRecordingMode? onVideoRecordingMode,
     OnPreviewMode? onPreviewMode,
     OnAnalysisOnlyMode? onAnalysisOnlyMode,
-  }) {
-    return switch (this) {
-      (VideoCameraState state) => onVideoMode?.call(state),
-      (PhotoCameraState state) => onPhotoMode?.call(state),
-      (PreparingCameraState state) => onPreparingCamera?.call(state),
-      (VideoRecordingCameraState state) => onVideoRecordingMode?.call(state),
-      (PreviewCameraState state) => onPreviewMode?.call(state),
-      (AnalysisCameraState state) => onAnalysisOnlyMode?.call(state),
-      CameraState() => null,
-    };
-  }
+  }) =>
+      switch (this) {
+        (final VideoCameraState state) => onVideoMode?.call(state),
+        (final PhotoCameraState state) => onPhotoMode?.call(state),
+        (final PreparingCameraState state) => onPreparingCamera?.call(state),
+        (final VideoRecordingCameraState state) =>
+          onVideoRecordingMode?.call(state),
+        (final PreviewCameraState state) => onPreviewMode?.call(state),
+        (final AnalysisCameraState state) => onAnalysisOnlyMode?.call(state),
+        CameraState() => null,
+      };
 
   /// Closes streams depending on the current state
   void dispose();
@@ -63,7 +64,7 @@ abstract class CameraState {
     FlashMode? flash,
     SensorType? type,
   }) async {
-    final previous = cameraContext.sensorConfig;
+    final SensorConfig previous = cameraContext.sensorConfig;
 
     SensorConfig next;
     if (previous.sensors.length <= 1) {
@@ -71,7 +72,7 @@ abstract class CameraState {
         sensor: previous.sensors.first.position == SensorPosition.back
             ? Sensor.position(SensorPosition.front)
             : Sensor.position(SensorPosition.back),
-        // TODO Initial values are not set in native when set like this
+        // TODOInitial values are not set in native when set like this
         aspectRatio: aspectRatio ?? CameraAspectRatios.ratio_4_3,
         zoom: zoom ?? 0.0,
         flashMode: flash ?? FlashMode.none,
@@ -80,11 +81,13 @@ abstract class CameraState {
       // switch all camera position in array by one like this:
       // old: [front, telephoto, wide]
       // new : [wide, front, telephoto]
-      final newSensorsCopy = [...previous.sensors.whereNotNull()];
+      final List<Sensor> newSensorsCopy = <Sensor>[
+        ...previous.sensors.whereNotNull()
+      ];
       next = SensorConfig.multiple(
         sensors: newSensorsCopy
           ..insert(0, newSensorsCopy.removeAt(newSensorsCopy.length - 1)),
-        // TODO Initial values are not set in native when set like this
+        // TODOInitial values are not set in native when set like this
         aspectRatio: aspectRatio ?? CameraAspectRatios.ratio_4_3,
         zoom: zoom ?? 0.0,
         flashMode: flash ?? FlashMode.none,
@@ -92,7 +95,7 @@ abstract class CameraState {
     }
     await cameraContext.setSensorConfig(next);
 
-    // TODO Once initial sensorConfig is correctly handled, we can remove below lines
+    // TODOOnce initial sensorConfig is correctly handled, we can remove below lines
     if (aspectRatio != null) {
       await next.setAspectRatio(aspectRatio);
     }
@@ -105,11 +108,11 @@ abstract class CameraState {
   }
 
   void setSensorType(int cameraPosition, SensorType type, String deviceId) {
-    final previous = cameraContext.sensorConfig;
+    final SensorConfig previous = cameraContext.sensorConfig;
     int sensorIndex = 0;
-    final next = SensorConfig.multiple(
+    final SensorConfig next = SensorConfig.multiple(
       sensors: previous.sensors
-          .map((sensor) {
+          .map((Sensor sensor) {
             if (sensorIndex == cameraPosition) {
               if (sensor.type == SensorType.trueDepth) {
                 sensor.position = SensorPosition.front;
@@ -117,8 +120,9 @@ abstract class CameraState {
                 sensor.position = SensorPosition.back;
               }
 
-              sensor.deviceId = deviceId;
-              sensor.type = type;
+              sensor
+                ..deviceId = deviceId
+                ..type = type;
             }
 
             sensorIndex++;
@@ -152,9 +156,8 @@ abstract class CameraState {
     cameraContext.toggleFilterSelector();
   }
 
-  Future<void> setFilter(AwesomeFilter newFilter) {
-    return cameraContext.setFilter(newFilter);
-  }
+  Future<void> setFilter(AwesomeFilter newFilter) =>
+      cameraContext.setFilter(newFilter);
 
   /// The sensor config allows you to
   /// - set the [FlashMode]
@@ -179,17 +182,13 @@ abstract class CameraState {
 
   SaveConfig? get saveConfig => cameraContext.saveConfig;
 
-  Future<PreviewSize> previewSize(int index) {
-    return cameraContext.previewSize(index);
-  }
+  Future<PreviewSize> previewSize(int index) =>
+      cameraContext.previewSize(index);
 
-  Future<SensorDeviceData> getSensors() {
-    return cameraContext.getSensors();
-  }
+  Future<SensorDeviceData> getSensors() => cameraContext.getSensors();
 
-  Future<int?> previewTextureId(int cameraPosition) {
-    return cameraContext.previewTextureId(cameraPosition);
-  }
+  Future<int?> previewTextureId(int cameraPosition) =>
+      cameraContext.previewTextureId(cameraPosition);
 
   AnalysisController? get analysisController =>
       cameraContext.analysisController;

@@ -1,15 +1,15 @@
-import 'dart:math';
+import "dart:math";
 
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class CanvasTransformation {
-  final Point? scale;
-  final Point? translate;
 
   const CanvasTransformation({
     this.scale,
     this.translate,
   });
+  final Point? scale;
+  final Point? translate;
 }
 
 extension CanvasTransformationExt on Canvas {
@@ -19,7 +19,7 @@ extension CanvasTransformationExt on Canvas {
   ) {
     if (transformation.scale != null) {
       scale(transformation.scale!.x.toDouble(),
-          transformation.scale!.y.toDouble());
+          transformation.scale!.y.toDouble(),);
     }
     if (transformation.translate != null) {
       translate(

@@ -1,13 +1,11 @@
-import 'package:camerawesome/pigeon.dart';
-import 'package:camerawesome/src/orchestrator/models/sensors.dart';
+import "package:camera_awesome/pigeon.dart";
+import "package:camera_awesome/src/orchestrator/models/sensors.dart";
 
 class CameraCharacteristics {
   const CameraCharacteristics._();
 
   static Future<bool> isVideoRecordingAndImageAnalysisSupported(
     SensorPosition sensor,
-  ) {
-    return CameraInterface().isVideoRecordingAndImageAnalysisSupported(
-        PigeonSensorPosition.values.byName(sensor.name));
-  }
+  ) => CameraInterface().isVideoRecordingAndImageAnalysisSupported(
+        PigeonSensorPosition.values.byName(sensor.name),);
 }

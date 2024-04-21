@@ -1,11 +1,13 @@
-import 'dart:async';
-import 'dart:math';
+// ignore_for_file: cascade_invocations, discarded_futures
 
-import 'package:camera_app/utils/mlkit_utils.dart';
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
-import 'package:rxdart/rxdart.dart';
+import "dart:async";
+import "dart:math";
+
+import "package:camera_app/utils/mlkit_utils.dart";
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
+import "package:google_mlkit_face_detection/google_mlkit_face_detection.dart";
+import "package:rxdart/rxdart.dart";
 
 /// This is an example using machine learning with the camera image
 /// This is still in progress and some changes are about to come
@@ -23,12 +25,10 @@ class CameraAwesomeApp extends StatelessWidget {
   const CameraAwesomeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'camerAwesome App',
-      home: CameraPage(),
-    );
-  }
+  Widget build(BuildContext context) => const MaterialApp(
+        title: "camerAwesome App",
+        home: CameraPage(),
+      );
 }
 
 class CameraPage extends StatefulWidget {
@@ -39,14 +39,15 @@ class CameraPage extends StatefulWidget {
 }
 
 class _CameraPageState extends State<CameraPage> {
-  final _faceDetectionController = BehaviorSubject<FaceDetectionModel>();
+  final BehaviorSubject<FaceDetectionModel> _faceDetectionController =
+      BehaviorSubject<FaceDetectionModel>();
   Preview? _preview;
 
-  final options = FaceDetectorOptions(
+  final FaceDetectorOptions options = FaceDetectorOptions(
     enableContours: true,
     enableClassification: true,
   );
-  late final faceDetector = FaceDetector(options: options);
+  late final FaceDetector faceDetector = FaceDetector(options: options);
 
   @override
   void deactivate() {
@@ -61,35 +62,33 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: CameraAwesomeBuilder.previewOnly(
-        previewFit: CameraPreviewFit.contain,
-        sensorConfig: SensorConfig.single(
-          sensor: Sensor.position(SensorPosition.front),
-          aspectRatio: CameraAspectRatios.ratio_1_1,
-        ),
-        onImageForAnalysis: (img) => _analyzeImage(img),
-        imageAnalysisConfig: AnalysisConfig(
-          androidOptions: const AndroidAnalysisOptions.nv21(
-            width: 250,
+  Widget build(BuildContext context) => Scaffold(
+        body: CameraAwesomeBuilder.previewOnly(
+          previewFit: CameraPreviewFit.contain,
+          sensorConfig: SensorConfig.single(
+            sensor: Sensor.position(SensorPosition.front),
+            aspectRatio: CameraAspectRatios.ratio_1_1,
           ),
-          maxFramesPerSecond: 5,
+          onImageForAnalysis: _analyzeImage,
+          imageAnalysisConfig: AnalysisConfig(
+            androidOptions: const AndroidAnalysisOptions.nv21(
+              width: 250,
+            ),
+            maxFramesPerSecond: 5,
+          ),
+          builder: (CameraState state, Preview preview) {
+            _preview = preview;
+            return _MyPreviewDecoratorWidget(
+              cameraState: state,
+              faceDetectionStream: _faceDetectionController,
+              preview: _preview!,
+            );
+          },
         ),
-        builder: (state, preview) {
-          _preview = preview;
-          return _MyPreviewDecoratorWidget(
-            cameraState: state,
-            faceDetectionStream: _faceDetectionController,
-            preview: _preview!,
-          );
-        },
-      ),
-    );
-  }
+      );
 
   Future _analyzeImage(AnalysisImage img) async {
-    final inputImage = img.toInputImage();
+    final InputImage inputImage = img.toInputImage();
 
     try {
       _faceDetectionController.add(
@@ -102,66 +101,68 @@ class _CameraPageState extends State<CameraPage> {
         ),
       );
       // debugPrint("...sending image resulted with : ${faces?.length} faces");
-    } catch (error) {
+    } on Exception catch (error) {
       debugPrint("...sending image resulted error $error");
     }
   }
 }
 
 class _MyPreviewDecoratorWidget extends StatelessWidget {
-  final CameraState cameraState;
-  final Stream<FaceDetectionModel> faceDetectionStream;
-  final Preview preview;
-
   const _MyPreviewDecoratorWidget({
     required this.cameraState,
     required this.faceDetectionStream,
     required this.preview,
   });
 
+  final CameraState cameraState;
+  final Stream<FaceDetectionModel> faceDetectionStream;
+  final Preview preview;
+
   @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: StreamBuilder(
-        stream: cameraState.sensorConfig$,
-        builder: (_, snapshot) {
-          if (!snapshot.hasData) {
-            return const SizedBox();
-          } else {
-            return StreamBuilder<FaceDetectionModel>(
-              stream: faceDetectionStream,
-              builder: (_, faceModelSnapshot) {
-                if (!faceModelSnapshot.hasData) return const SizedBox();
-                // this is the transformation needed to convert the image to the preview
-                // Android mirrors the preview but the analysis image is not
-                final canvasTransformation = faceModelSnapshot.data!.img
-                    ?.getCanvasTransformation(preview);
-                return CustomPaint(
-                  painter: FaceDetectorPainter(
-                    model: faceModelSnapshot.requireData,
-                    canvasTransformation: canvasTransformation,
-                    preview: preview,
-                  ),
-                );
-              },
-            );
-          }
-        },
-      ),
-    );
-  }
+  Widget build(BuildContext context) => IgnorePointer(
+        child: StreamBuilder(
+          stream: cameraState.sensorConfig$,
+          builder: (_, AsyncSnapshot<SensorConfig> snapshot) {
+            if (!snapshot.hasData) {
+              return const SizedBox();
+            } else {
+              return StreamBuilder<FaceDetectionModel>(
+                stream: faceDetectionStream,
+                builder:
+                    (_, AsyncSnapshot<FaceDetectionModel> faceModelSnapshot) {
+                  if (!faceModelSnapshot.hasData) {
+                    return const SizedBox();
+                  }
+                  // this is the transformation needed to convert the image to the preview
+                  // Android mirrors the preview but the analysis image is not
+                  final CanvasTransformation? canvasTransformation =
+                      faceModelSnapshot.data!.img
+                          ?.getCanvasTransformation(preview);
+                  return CustomPaint(
+                    painter: FaceDetectorPainter(
+                      model: faceModelSnapshot.requireData,
+                      canvasTransformation: canvasTransformation,
+                      preview: preview,
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
+      );
 }
 
 class FaceDetectorPainter extends CustomPainter {
-  final FaceDetectionModel model;
-  final CanvasTransformation? canvasTransformation;
-  final Preview? preview;
-
   FaceDetectorPainter({
     required this.model,
     this.canvasTransformation,
     this.preview,
   });
+
+  final FaceDetectionModel model;
+  final CanvasTransformation? canvasTransformation;
+  final Preview? preview;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -175,23 +176,25 @@ class FaceDetectorPainter extends CustomPainter {
       canvas.applyTransformation(canvasTransformation!, size);
     }
     for (final Face face in model.faces) {
-      Map<FaceContourType, Path> paths = {
-        for (var fct in FaceContourType.values) fct: Path()
+      final Map<FaceContourType, Path> paths = <FaceContourType, Path>{
+        for (final FaceContourType fct in FaceContourType.values) fct: Path(),
       };
-      face.contours.forEach((contourType, faceContour) {
+      face.contours
+          .forEach((FaceContourType contourType, FaceContour? faceContour) {
         if (faceContour != null) {
           paths[contourType]!.addPolygon(
-              faceContour.points
-                  .map(
-                    (element) => preview!.convertFromImage(
-                      Offset(element.x.toDouble(), element.y.toDouble()),
-                      model.img!,
-                    ),
-                  )
-                  .toList(),
-              true);
-          for (var element in faceContour.points) {
-            var position = preview!.convertFromImage(
+            faceContour.points
+                .map(
+                  (Point<int> element) => preview!.convertFromImage(
+                    Offset(element.x.toDouble(), element.y.toDouble()),
+                    model.img!,
+                  ),
+                )
+                .toList(),
+            true,
+          );
+          for (final Point<int> element in faceContour.points) {
+            final Offset position = preview!.convertFromImage(
               Offset(element.x.toDouble(), element.y.toDouble()),
               model.img!,
             );
@@ -203,14 +206,16 @@ class FaceDetectorPainter extends CustomPainter {
           }
         }
       });
-      paths.removeWhere((key, value) => value.getBounds().isEmpty);
-      for (var p in paths.entries) {
+      paths.removeWhere(
+          (FaceContourType key, Path value) => value.getBounds().isEmpty,);
+      for (final MapEntry<FaceContourType, Path> p in paths.entries) {
         canvas.drawPath(
-            p.value,
-            Paint()
-              ..color = Colors.orange
-              ..strokeWidth = 2
-              ..style = PaintingStyle.stroke);
+          p.value,
+          Paint()
+            ..color = Colors.orange
+            ..strokeWidth = 2
+            ..style = PaintingStyle.stroke,
+        );
       }
     }
     // if you want to draw without canvas transformation, use this:
@@ -220,14 +225,13 @@ class FaceDetectorPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(FaceDetectorPainter oldDelegate) {
-    return oldDelegate.model != model;
-  }
+  bool shouldRepaint(FaceDetectorPainter oldDelegate) =>
+      oldDelegate.model != model;
 }
 
 extension InputImageRotationConversion on InputImageRotation {
   double toRadians() {
-    final degrees = toDegrees();
+    final int degrees = toDegrees();
     return degrees * 2 * pi / 360;
   }
 
@@ -245,20 +249,21 @@ extension InputImageRotationConversion on InputImageRotation {
   }
 }
 
+@immutable
 class FaceDetectionModel {
-  final List<Face> faces;
-  final Size absoluteImageSize;
-  final int rotation;
-  final InputImageRotation imageRotation;
-  final AnalysisImage? img;
-
-  FaceDetectionModel({
+  const FaceDetectionModel({
     required this.faces,
     required this.absoluteImageSize,
     required this.rotation,
     required this.imageRotation,
     this.img,
   });
+
+  final List<Face> faces;
+  final Size absoluteImageSize;
+  final int rotation;
+  final InputImageRotation imageRotation;
+  final AnalysisImage? img;
 
   Size get croppedSize => img!.croppedSize;
 

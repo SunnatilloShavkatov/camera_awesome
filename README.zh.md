@@ -186,7 +186,7 @@ java.lang.IncompatibleClassChangeError: Found interface com.google.android.gms.l
 ### 在你的 Flutter 应用中导入插件
 
 ```dart
-import 'package:camerawesome/camerawesome_plugin.dart';
+import 'package:camera_awesome/camerawesome_plugin.dart';
 ```
 
 ---

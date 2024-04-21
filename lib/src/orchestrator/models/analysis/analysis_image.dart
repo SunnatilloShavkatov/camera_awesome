@@ -1,14 +1,36 @@
-import 'dart:io';
-import 'dart:math';
-import 'dart:ui';
+import "dart:io";
+import "dart:math";
+import "dart:ui";
 
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:camerawesome/pigeon.dart';
-import 'package:flutter/foundation.dart';
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:camera_awesome/pigeon.dart";
+import "package:flutter/foundation.dart";
 
-part 'analysis_image_ext.dart';
+part "analysis_image_ext.dart";
 
 abstract class AnalysisImage {
+
+  const AnalysisImage({
+    required this.height,
+    required this.width,
+    required this.format,
+    required this.rotation,
+  });
+
+  factory AnalysisImage.from(Map<String, dynamic> map) {
+    final InputAnalysisImageFormat format = inputAnalysisImageFormatParser(map["format"]);
+    if (format == InputAnalysisImageFormat.nv21) {
+      return Nv21Image.from(map);
+    } else if (format == InputAnalysisImageFormat.bgra8888) {
+      return Bgra8888Image.from(map);
+    } else if (format == InputAnalysisImageFormat.yuv_420) {
+      return Yuv420Image.from(map);
+    } else if (format == InputAnalysisImageFormat.jpeg) {
+      return JpegImage.from(map);
+    } else {
+      throw ArgumentError("Unsupported AnalysisImage format: $format");
+    }
+  }
   /// The height of the image in pixels.
   final int height;
 
@@ -27,28 +49,6 @@ abstract class AnalysisImage {
   /// Cropped size of the analysis image corresponding to what is seen on the preview.
   Size get croppedSize;
 
-  const AnalysisImage({
-    required this.height,
-    required this.width,
-    required this.format,
-    required this.rotation,
-  });
-
-  factory AnalysisImage.from(Map<String, dynamic> map) {
-    final format = inputAnalysisImageFormatParser(map["format"]);
-    if (format == InputAnalysisImageFormat.nv21) {
-      return Nv21Image.from(map);
-    } else if (format == InputAnalysisImageFormat.bgra8888) {
-      return Bgra8888Image.from(map);
-    } else if (format == InputAnalysisImageFormat.yuv_420) {
-      return Yuv420Image.from(map);
-    } else if (format == InputAnalysisImageFormat.jpeg) {
-      return JpegImage.from(map);
-    } else {
-      throw "Unsupported AnalysisImage format: $format";
-    }
-  }
-
   /// Helper function to decide what to do depending on the AnalysisImage format with type safe checks.
   T? when<T>({
     T Function(Nv21Image image)? nv21,
@@ -65,7 +65,7 @@ abstract class AnalysisImage {
     } else if (this is Yuv420Image) {
       return yuv420?.call(this as Yuv420Image);
     } else {
-      throw "Unsupported AnalysisImage format: $format";
+      throw ArgumentError("Unsupported AnalysisImage format: $format");
     }
   }
 
@@ -125,7 +125,6 @@ abstract class AnalysisImage {
 }
 
 class Bgra8888Image extends AnalysisImage {
-  final List<ImagePlane> planes;
 
   const Bgra8888Image({
     required super.height,
@@ -145,13 +144,14 @@ class Bgra8888Image extends AnalysisImage {
           rotation: InputAnalysisImageRotation.values.byName(map["rotation"]),
           format: inputAnalysisImageFormatParser(map["format"]),
         );
+  final List<ImagePlane> planes;
 
   @override
   Size get croppedSize => Size(width.toDouble(), height.toDouble());
 
   Uint8List get bytes {
-    final allBytes = WriteBuffer();
-    for (final plane in planes) {
+    final WriteBuffer allBytes = WriteBuffer();
+    for (final ImagePlane plane in planes) {
       allBytes.putUint8List(plane.bytes);
     }
     return allBytes.done().buffer.asUint8List();
@@ -159,9 +159,6 @@ class Bgra8888Image extends AnalysisImage {
 }
 
 class Nv21Image extends AnalysisImage {
-  final List<ImagePlane> planes;
-  final Uint8List bytes;
-  final Rect cropRect;
 
   const Nv21Image({
     required this.bytes,
@@ -190,18 +187,19 @@ class Nv21Image extends AnalysisImage {
           rotation: InputAnalysisImageRotation.values.byName(map["rotation"]),
           format: inputAnalysisImageFormatParser(map["format"]),
         );
+  final List<ImagePlane> planes;
+  final Uint8List bytes;
+  final Rect cropRect;
 
   @override
   Size get croppedSize => Size(
-        // TODO Width and height of cropRect are inverted
+        // TODOWidth and height of cropRect are inverted
         cropRect.size.height,
         cropRect.size.width,
       );
 }
 
 class Yuv420Image extends AnalysisImage {
-  final List<ImagePlane> planes;
-  final Rect cropRect;
 
   const Yuv420Image({
     required super.height,
@@ -228,18 +226,18 @@ class Yuv420Image extends AnalysisImage {
           rotation: InputAnalysisImageRotation.values.byName(map["rotation"]),
           format: inputAnalysisImageFormatParser(map["format"]),
         );
+  final List<ImagePlane> planes;
+  final Rect cropRect;
 
   @override
   Size get croppedSize => Size(
-        // TODO Width and height of cropRect are inverted
+        // TODOWidth and height of cropRect are inverted
         cropRect.size.height,
         cropRect.size.width,
       );
 }
 
 class JpegImage extends AnalysisImage {
-  final Uint8List bytes;
-  final Rect? cropRect;
 
   const JpegImage({
     required this.bytes,
@@ -266,11 +264,13 @@ class JpegImage extends AnalysisImage {
                 )
               : null,
         );
+  final Uint8List bytes;
+  final Rect? cropRect;
 
   @override
   Size get croppedSize => cropRect != null
       ? Size(
-          // TODO Width and height of cropRect are inverted
+          // TODOWidth and height of cropRect are inverted
           cropRect!.size.height,
           cropRect!.size.width,
         )

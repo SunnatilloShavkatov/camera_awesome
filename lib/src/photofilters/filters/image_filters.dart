@@ -1,6 +1,6 @@
-import 'dart:typed_data';
+import "dart:typed_data";
 
-import 'package:camerawesome/src/photofilters/filters/filters.dart';
+import "package:camera_awesome/src/photofilters/filters/filters.dart";
 
 ///The [ImageSubFilter] class is the abstract class to define any ImageSubFilter.
 mixin ImageSubFilter on SubFilter {
@@ -9,16 +9,15 @@ mixin ImageSubFilter on SubFilter {
 }
 
 class ImageFilter extends Filter {
-  final List<ImageSubFilter> subFilters;
 
-  ImageFilter({required String name})
-      : subFilters = [],
-        super(name: name);
+  ImageFilter({required super.name})
+      : subFilters = <ImageSubFilter>[];
+  final List<ImageSubFilter> subFilters;
 
   ///Apply the [SubFilter] to an Image.
   @override
   void apply(Uint8List pixels, int width, int height) {
-    for (ImageSubFilter subFilter in subFilters) {
+    for (final ImageSubFilter subFilter in subFilters) {
       subFilter.apply(pixels, width, height);
     }
   }

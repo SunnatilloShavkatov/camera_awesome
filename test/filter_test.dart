@@ -1,19 +1,21 @@
-import 'dart:io';
+import "dart:io";
+import "dart:typed_data";
 
-import 'package:camerawesome/src/photofilters/filters/preset_filters.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:image/image.dart';
+import "package:camera_awesome/src/photofilters/filters/filters.dart";
+import "package:camera_awesome/src/photofilters/filters/preset_filters.dart";
+import "package:flutter_test/flutter_test.dart";
+import "package:image/image.dart";
 
 void main() {
-  const src = 'test/res/bird.jpg';
+  const String src = "test/res/bird.jpg";
 
-  for (var filter in presetFiltersList) {
+  for (final Filter filter in presetFiltersList) {
     test("Apply filter ${filter.name}", () async {
-      final dest = 'test/out/${filter.name.replaceAll(" ", "_")}.jpg';
+      final String dest = 'test/out/${filter.name.replaceAll(" ", "_")}.jpg';
       await File(dest).parent.create(recursive: true);
 
       final Image image = decodeImage(File(src).readAsBytesSync())!;
-      final pixels = image.getBytes();
+      final Uint8List pixels = image.getBytes();
 
       // Make treatment
       filter.apply(pixels, image.width, image.height);

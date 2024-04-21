@@ -1,9 +1,9 @@
-import 'dart:typed_data';
+import "dart:typed_data";
 
 ///The [Filter] class to define a Filter consists of multiple [SubFilter]s
 abstract class Filter extends Object {
-  final String name;
   const Filter({required this.name});
+  final String name;
 
   ///Apply the [SubFilter] to an Image.
   void apply(Uint8List pixels, int width, int height);

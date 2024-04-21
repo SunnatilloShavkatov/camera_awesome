@@ -1,28 +1,27 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, prefer_constructors_over_static_methods, flutter_style_todos
 
-import 'dart:ui';
+import "dart:ui";
 
-import 'package:colorfilter_generator/addons.dart';
-import 'package:colorfilter_generator/colorfilter_generator.dart';
-import 'package:colorfilter_generator/presets.dart';
-import 'package:camerawesome/src/photofilters/filters/filters.dart'
+import "package:camera_awesome/src/photofilters/filters/filters.dart"
     as photofilters;
-import 'package:camerawesome/src/photofilters/filters/preset_filters.dart'
+import "package:camera_awesome/src/photofilters/filters/preset_filters.dart"
     as preset_filters;
+import "package:colorfilter_generator/addons.dart";
+import "package:colorfilter_generator/colorfilter_generator.dart";
+import "package:colorfilter_generator/presets.dart";
 
 // TODO: colorfilter_generator can be removed from dependencies
 // find a way to do it with photofilters only
 class AwesomeFilter {
-  final String _name;
-  final photofilters.Filter _outputFilter;
-  final List<double> matrix;
-
   AwesomeFilter({
     required String name,
     required photofilters.Filter outputFilter,
     required this.matrix,
   })  : _name = name,
         _outputFilter = outputFilter;
+  final String _name;
+  final photofilters.Filter _outputFilter;
+  final List<double> matrix;
 
   ColorFilter get preview => ColorFilter.matrix(matrix);
 
@@ -30,32 +29,32 @@ class AwesomeFilter {
 
   String get name => _name;
 
-  String get id => _name.toUpperCase().replaceAll(' ', '_');
+  String get id => _name.toUpperCase().replaceAll(" ", "_");
 
   static AwesomeFilter get None => AwesomeFilter(
-        name: 'Original',
+        name: "Original",
         outputFilter: preset_filters.NoFilter(),
         matrix: PresetFilters.none.matrix,
       );
 
   static AwesomeFilter get AddictiveBlue => AwesomeFilter(
-        name: 'Addictive Blue',
+        name: "Addictive Blue",
         outputFilter: preset_filters.AddictiveBlueFilter(),
         matrix: PresetFilters.addictiveBlue.matrix,
       );
 
   static AwesomeFilter get AddictiveRed => AwesomeFilter(
-        name: 'Addictive Red',
+        name: "Addictive Red",
         outputFilter: preset_filters.AddictiveRedFilter(),
         matrix: PresetFilters.addictiveRed.matrix,
       );
 
   static AwesomeFilter get Aden => AwesomeFilter(
-        name: 'Aden',
+        name: "Aden",
         outputFilter: preset_filters.AdenFilter(),
         matrix: ColorFilterGenerator(
-          name: 'Aden',
-          filters: [
+          name: "Aden",
+          filters: <List<double>>[
             ColorFilterAddons.addictiveColor(48, 30, 45),
             ColorFilterAddons.saturation(-0.2),
           ],
@@ -63,17 +62,17 @@ class AwesomeFilter {
       );
 
   static AwesomeFilter get Amaro => AwesomeFilter(
-        name: 'Amaro',
+        name: "Amaro",
         outputFilter: preset_filters.AmaroFilter(),
         matrix: PresetFilters.amaro.matrix,
       );
 
   static AwesomeFilter get Ashby => AwesomeFilter(
-        name: 'Ashby',
+        name: "Ashby",
         outputFilter: preset_filters.AshbyFilter(),
         matrix: ColorFilterGenerator(
-          name: 'Ashby',
-          filters: [
+          name: "Ashby",
+          filters: <List<double>>[
             ColorFilterAddons.addictiveColor(45, 30, 15),
             ColorFilterAddons.brightness(0.1),
           ],
@@ -81,11 +80,11 @@ class AwesomeFilter {
       );
 
   static AwesomeFilter get Brannan => AwesomeFilter(
-        name: 'Brannan',
+        name: "Brannan",
         outputFilter: preset_filters.BrannanFilter(),
         matrix: ColorFilterGenerator(
-          name: 'Brannan',
-          filters: [
+          name: "Brannan",
+          filters: <List<double>>[
             ColorFilterAddons.contrast(0.23),
             ColorFilterAddons.addictiveColor(7, 7, 25),
           ],
@@ -93,11 +92,11 @@ class AwesomeFilter {
       );
 
   static AwesomeFilter get Brooklyn => AwesomeFilter(
-        name: 'Brooklyn',
+        name: "Brooklyn",
         outputFilter: preset_filters.BrooklynFilter(),
         matrix: ColorFilterGenerator(
-          name: 'Brooklyn',
-          filters: [
+          name: "Brooklyn",
+          filters: <List<double>>[
             ColorFilterAddons.sepia(0.4),
             ColorFilterAddons.brightness(-0.1),
             ColorFilterAddons.addictiveColor(25, 30, 42),
@@ -112,19 +111,19 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Clarendon => AwesomeFilter(
-        name: 'Clarendon',
+        name: "Clarendon",
         outputFilter: preset_filters.ClarendonFilter(),
         matrix: PresetFilters.clarendon.matrix,
       );
 
   static AwesomeFilter get Crema => AwesomeFilter(
-        name: 'Crema',
+        name: "Crema",
         outputFilter: preset_filters.CremaFilter(),
         matrix: PresetFilters.crema.matrix,
       );
 
   static AwesomeFilter get Dogpatch => AwesomeFilter(
-        name: 'Dogpatch',
+        name: "Dogpatch",
         outputFilter: preset_filters.DogpatchFilter(),
         matrix: PresetFilters.dogpatch.matrix,
       );
@@ -142,19 +141,19 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Gingham => AwesomeFilter(
-        name: 'Gingham',
+        name: "Gingham",
         outputFilter: preset_filters.GinghamFilter(),
         matrix: PresetFilters.gingham.matrix,
       );
 
   static AwesomeFilter get Ginza => AwesomeFilter(
-        name: 'Ginza',
+        name: "Ginza",
         outputFilter: preset_filters.GinzaFilter(),
         matrix: PresetFilters.ginza.matrix,
       );
 
   static AwesomeFilter get Hefe => AwesomeFilter(
-        name: 'Hefe',
+        name: "Hefe",
         outputFilter: preset_filters.HefeFilter(),
         matrix: PresetFilters.hefe.matrix,
       );
@@ -166,19 +165,19 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Hudson => AwesomeFilter(
-        name: 'Hudson',
+        name: "Hudson",
         outputFilter: preset_filters.HudsonFilter(),
         matrix: PresetFilters.hudson.matrix,
       );
 
   static AwesomeFilter get Inkwell => AwesomeFilter(
-        name: 'Inkwell',
+        name: "Inkwell",
         outputFilter: preset_filters.InkwellFilter(),
         matrix: PresetFilters.inkwell.matrix,
       );
 
   static AwesomeFilter get Juno => AwesomeFilter(
-        name: 'Juno',
+        name: "Juno",
         outputFilter: preset_filters.JunoFilter(),
         matrix: PresetFilters.juno.matrix,
       );
@@ -190,19 +189,19 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Lark => AwesomeFilter(
-        name: 'Lark',
+        name: "Lark",
         outputFilter: preset_filters.LarkFilter(),
         matrix: PresetFilters.lark.matrix,
       );
 
   static AwesomeFilter get LoFi => AwesomeFilter(
-        name: 'Lo-Fi',
+        name: "Lo-Fi",
         outputFilter: preset_filters.LoFiFilter(),
         matrix: PresetFilters.loFi.matrix,
       );
 
   static AwesomeFilter get Ludwig => AwesomeFilter(
-        name: 'Ludwig',
+        name: "Ludwig",
         outputFilter: preset_filters.LudwigFilter(),
         matrix: PresetFilters.ludwig.matrix,
       );
@@ -220,7 +219,7 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Moon => AwesomeFilter(
-        name: 'Moon',
+        name: "Moon",
         outputFilter: preset_filters.MoonFilter(),
         matrix: PresetFilters.moon.matrix,
       );
@@ -232,13 +231,13 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Perpetua => AwesomeFilter(
-        name: 'Perpetua',
+        name: "Perpetua",
         outputFilter: preset_filters.PerpetuaFilter(),
         matrix: PresetFilters.perpetua.matrix,
       );
 
   static AwesomeFilter get Reyes => AwesomeFilter(
-        name: 'Reyes',
+        name: "Reyes",
         outputFilter: preset_filters.ReyesFilter(),
         matrix: PresetFilters.reyes.matrix,
       );
@@ -250,7 +249,7 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Sierra => AwesomeFilter(
-        name: 'Sierra',
+        name: "Sierra",
         outputFilter: preset_filters.SierraFilter(),
         matrix: PresetFilters.sierra.matrix,
       );
@@ -262,19 +261,19 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Slumber => AwesomeFilter(
-        name: 'Slumber',
+        name: "Slumber",
         outputFilter: preset_filters.SlumberFilter(),
         matrix: PresetFilters.slumber.matrix,
       );
 
   static AwesomeFilter get Stinson => AwesomeFilter(
-        name: 'Stinson',
+        name: "Stinson",
         outputFilter: preset_filters.StinsonFilter(),
         matrix: PresetFilters.stinson.matrix,
       );
 
   static AwesomeFilter get Sutro => AwesomeFilter(
-        name: 'Sutro',
+        name: "Sutro",
         outputFilter: preset_filters.SutroFilter(),
         matrix: PresetFilters.sutro.matrix,
       );
@@ -298,28 +297,29 @@ class AwesomeFilter {
   //     );
 
   static AwesomeFilter get Walden => AwesomeFilter(
-      name: 'Walden',
-      outputFilter: preset_filters.WaldenFilter(),
-      matrix: ColorFilterGenerator(
         name: "Walden",
-        filters: [
-          ColorFilterAddons.brightness(0.1),
-          ColorFilterAddons.addictiveColor(45, 45, 0),
-        ],
-      ).matrix);
+        outputFilter: preset_filters.WaldenFilter(),
+        matrix: ColorFilterGenerator(
+          name: "Walden",
+          filters: <List<double>>[
+            ColorFilterAddons.brightness(0.1),
+            ColorFilterAddons.addictiveColor(45, 45, 0),
+          ],
+        ).matrix,
+      );
 
   static AwesomeFilter get Willow => AwesomeFilter(
-        name: 'Willow',
+        name: "Willow",
         outputFilter: preset_filters.WillowFilter(),
         matrix: PresetFilters.willow.matrix,
       );
 
   static AwesomeFilter get XProII => AwesomeFilter(
-        name: 'X-Pro II',
+        name: "X-Pro II",
         outputFilter: preset_filters.XProIIFilter(),
         matrix: ColorFilterGenerator(
           name: "X-Pro II",
-          filters: [
+          filters: <List<double>>[
             ColorFilterAddons.addictiveColor(30, 30, 0),
             ColorFilterAddons.saturation(0.2),
             ColorFilterAddons.contrast(0.2),

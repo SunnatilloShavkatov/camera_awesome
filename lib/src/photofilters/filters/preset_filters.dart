@@ -1,8 +1,10 @@
-import 'dart:typed_data';
+// ignore_for_file: cascade_invocations
 
-import 'package:camerawesome/src/photofilters/filters/color_filters.dart';
-import 'package:camerawesome/src/photofilters/filters/subfilters.dart';
-import 'package:camerawesome/src/photofilters/filters/filters.dart';
+import "dart:typed_data";
+
+import "package:camera_awesome/src/photofilters/filters/color_filters.dart";
+import "package:camera_awesome/src/photofilters/filters/filters.dart";
+import "package:camera_awesome/src/photofilters/filters/subfilters.dart";
 
 // NoFilter: No filter
 class NoFilter extends ColorFilter {
@@ -17,9 +19,10 @@ class NoFilter extends ColorFilter {
 // Clarendon: adds light to lighter areas and dark to darker areas
 class ClarendonFilter extends ColorFilter {
   ClarendonFilter() : super(name: "Clarendon") {
-    subFilters.add(BrightnessSubFilter(.1));
-    subFilters.add(ContrastSubFilter(.1));
-    subFilters.add(SaturationSubFilter(.15));
+    subFilters
+      ..add(BrightnessSubFilter(.1))
+      ..add(ContrastSubFilter(.1))
+      ..add(SaturationSubFilter(.15));
   }
 }
 
@@ -356,7 +359,7 @@ class CharmesFilter extends ColorFilter {
   }
 }
 
-final List<Filter> presetFiltersList = [
+final List<Filter> presetFiltersList = <Filter>[
   NoFilter(),
   AddictiveBlueFilter(),
   AddictiveRedFilter(),

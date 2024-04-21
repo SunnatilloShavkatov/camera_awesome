@@ -1,13 +1,12 @@
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:flutter/material.dart';
-import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+// ignore_for_file: cascade_invocations
+
+import "dart:math";
+
+import "package:camera_awesome/camerawesome_plugin.dart";
+import "package:flutter/material.dart";
+import "package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart";
 
 class BarcodePreviewOverlay extends StatefulWidget {
-  final CameraState state;
-  final List<Barcode> barcodes;
-  final AnalysisImage? analysisImage;
-  final bool isBackCamera;
-  final Preview preview;
 
   const BarcodePreviewOverlay({
     super.key,
@@ -17,6 +16,11 @@ class BarcodePreviewOverlay extends StatefulWidget {
     required this.preview,
     this.isBackCamera = true,
   });
+  final CameraState state;
+  final List<Barcode> barcodes;
+  final AnalysisImage? analysisImage;
+  final bool isBackCamera;
+  final Preview preview;
 
   @override
   State<BarcodePreviewOverlay> createState() => _BarcodePreviewOverlayState();
@@ -57,7 +61,7 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
     super.didUpdateWidget(oldWidget);
   }
 
-  _refreshScanArea() {
+  void _refreshScanArea() {
     // previewSize is the preview as seen by the camera but it might
     // not fulfill the current aspectRatio.
     // previewRect on the other hand is the preview as seen by the user,
@@ -77,8 +81,7 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
     _screenSize = MediaQuery.of(context).size;
 
     return IgnorePointer(
-      ignoring: true,
-      child: Stack(children: [
+      child: Stack(children: <Widget>[
         Positioned.fill(
           child: CustomPaint(
             painter: BarcodeFocusAreaPainter(
@@ -95,7 +98,7 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
               widget.preview.previewSize.height / 2 + _scanArea.size.height / 2,
           left: 0,
           right: 0,
-          child: Column(children: [
+          child: Column(children: <Widget>[
             Text(
               _barcodeRead ?? "",
               textAlign: TextAlign.center,
@@ -117,9 +120,9 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
                   ),
                 ),
               ),
-          ]),
+          ],),
         ),
-      ]),
+      ],),
     );
   }
 
@@ -133,7 +136,7 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
       // The canvas transformation is needed to display the barcode rect correctly on android
       canvasTransformation = img.getCanvasTransformation(widget.preview);
 
-      for (Barcode barcode in barcodes) {
+      for (final Barcode barcode in barcodes) {
         if (barcode.cornerPoints.isEmpty) {
           continue;
         }
@@ -142,13 +145,13 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
         // For simplicity we consider the barcode to be a Rect. Due to
         // perspective, it might not be in reality. You could build a Path
         // from the 4 corner points instead.
-        final topLeftOffset = barcode.cornerPoints[0];
-        final bottomRightOffset = barcode.cornerPoints[2];
-        var topLeftOff = widget.preview.convertFromImage(
+        final Point<int> topLeftOffset = barcode.cornerPoints[0];
+        final Point<int> bottomRightOffset = barcode.cornerPoints[2];
+        final Offset topLeftOff = widget.preview.convertFromImage(
           topLeftOffset.toOffset(),
           img,
         );
-        var bottomRightOff = widget.preview.convertFromImage(
+        final Offset bottomRightOff = widget.preview.convertFromImage(
           bottomRightOffset.toOffset(),
           img,
         );
@@ -185,26 +188,26 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
           });
         }
       }
-    } catch (error, stacktrace) {
+    } on Exception catch (error, stacktrace) {
       debugPrint("...sending image resulted error $error $stacktrace");
     }
   }
 }
 
 class BarcodeFocusAreaPainter extends CustomPainter {
-  final Size scanArea;
-  final Rect? barcodeRect;
-  final CanvasTransformation? canvasTransformation;
 
   BarcodeFocusAreaPainter({
     required this.scanArea,
     required this.barcodeRect,
     this.canvasTransformation,
   });
+  final Size scanArea;
+  final Rect? barcodeRect;
+  final CanvasTransformation? canvasTransformation;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final clippedRect = getClippedRect(size);
+    final Path clippedRect = getClippedRect(size);
     // Draw a semi-transparent overlay outside of the scan area
     canvas.drawPath(
       clippedRect,
@@ -251,8 +254,7 @@ class BarcodeFocusAreaPainter extends CustomPainter {
     }
   }
 
-  Path getInnerRect(Size size) {
-    return Path()
+  Path getInnerRect(Size size) => Path()
       ..addRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(
@@ -264,12 +266,11 @@ class BarcodeFocusAreaPainter extends CustomPainter {
           const Radius.circular(32),
         ),
       );
-  }
 
   Path getClippedRect(Size size) {
-    final fullRect = Path()
+    final Path fullRect = Path()
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
-    final innerRect = getInnerRect(size);
+    final Path innerRect = getInnerRect(size);
     // Substract innerRect from fullRect
     return Path.combine(
       PathOperation.difference,
@@ -279,16 +280,14 @@ class BarcodeFocusAreaPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant BarcodeFocusAreaPainter oldDelegate) {
-    return scanArea != oldDelegate.scanArea &&
+  bool shouldRepaint(covariant BarcodeFocusAreaPainter oldDelegate) => scanArea != oldDelegate.scanArea &&
         canvasTransformation != oldDelegate.canvasTransformation &&
         barcodeRect != oldDelegate.barcodeRect;
-  }
 }
 
 extension RenderObjectExtensions on RenderObject {
   Offset localToGlobal(Offset localPosition) {
-    final transform = getTransformTo(null);
+    final Matrix4 transform = getTransformTo(null);
     return MatrixUtils.transformPoint(transform, localPosition);
   }
 }

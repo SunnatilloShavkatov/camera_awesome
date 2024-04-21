@@ -1,13 +1,6 @@
-import 'dart:typed_data';
+import "dart:typed_data";
 
 class ImagePlane {
-  // TODO: Android is now broken as I need to change args for iOS
-  Uint8List bytes;
-  int bytesPerRow;
-  int? bytesPerPixel;
-  int? height;
-  int? width;
-
   ImagePlane({
     required this.bytes,
     required this.bytesPerRow,
@@ -16,13 +9,16 @@ class ImagePlane {
     required this.width,
   });
 
-  factory ImagePlane.from(Map<String, dynamic> map) {
-    return ImagePlane(
-      bytes: map["bytes"],
-      bytesPerRow: map["bytesPerRow"] ?? map["rowStride"],
-      bytesPerPixel: map["pixelStride"],
-      height: map["height"],
-      width: map["width"],
-    );
-  }
+  factory ImagePlane.from(Map<String, dynamic> map) => ImagePlane(
+        bytes: map["bytes"],
+        bytesPerRow: map["bytesPerRow"] ?? map["rowStride"],
+        bytesPerPixel: map["pixelStride"],
+        height: map["height"],
+        width: map["width"],
+      );
+  Uint8List bytes;
+  int bytesPerRow;
+  int? bytesPerPixel;
+  int? height;
+  int? width;
 }
