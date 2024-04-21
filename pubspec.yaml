@@ -14,13 +14,13 @@ environment:
 dependencies:
   carousel_slider: ^4.2.1
   collection: ^1.18.0
-  colorfilter_generator: ^0.0.8
   cross_file: ^0.3.4+1
   flutter:
     sdk: flutter
   image: ^4.1.7
   path_provider: ^2.1.3
   rxdart: ^0.27.7
+  matrix2d: ^1.0.4
 
 dev_dependencies:
   flutter_lints: ^3.0.2

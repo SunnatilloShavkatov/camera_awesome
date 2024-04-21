@@ -2,9 +2,9 @@
 
 import 'dart:ui';
 
-import 'package:colorfilter_generator/addons.dart';
-import 'package:colorfilter_generator/colorfilter_generator.dart';
-import 'package:colorfilter_generator/presets.dart';
+import 'addons.dart';
+import 'colorfilter_generator.dart';
+import 'presets.dart';
 import 'package:camera_awesome/src/photofilters/filters/filters.dart'
     as photofilters;
 import 'package:camera_awesome/src/photofilters/filters/preset_filters.dart'
