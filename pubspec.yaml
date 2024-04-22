@@ -39,7 +39,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.apparence.camerawesome.cameraX
+        package: com.apparence.camera_awesome.cameraX
         pluginClass: CameraAwesomeX
       ios:
         pluginClass: CamerawesomePlugin
