@@ -23,6 +23,7 @@ import kotlin.math.roundToInt
  * credits to yevhenRoman
  * https://gist.github.com/yevhenRoman/90681822adef43350844464be95d23f1
  */
+@Suppress("NAME_SHADOWING")
 @SuppressLint("RestrictedApi")
 class AutoFitPreviewBuilder private constructor(
     config: PreviewConfig,
@@ -75,7 +76,7 @@ class AutoFitPreviewBuilder private constructor(
         // Initialize public use-case with the given config
         useCase = Preview.Builder
             .fromConfig(config)
-            .build();
+            .build()
 
         // Every time the view finder is updated, recompute layout
 //        useCase.onPreviewOutputUpdateListener = Preview.OnPreviewOutputUpdateListener {

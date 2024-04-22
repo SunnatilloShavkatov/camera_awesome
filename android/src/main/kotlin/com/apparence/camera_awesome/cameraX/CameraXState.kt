@@ -25,6 +25,7 @@ import java.util.concurrent.Executor
 
 /// Hold the settings of the camera and use cases in this class and
 /// call updateLifecycle() to refresh the state
+@Suppress("DEPRECATION")
 data class CameraXState(
     private var cameraProvider: ProcessCameraProvider,
     val textureEntries: Map<String, TextureRegistry.SurfaceTextureEntry>,

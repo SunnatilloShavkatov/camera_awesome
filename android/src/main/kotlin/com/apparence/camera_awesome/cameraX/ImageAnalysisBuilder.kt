@@ -18,6 +18,7 @@ enum class OutputImageFormat {
     JPEG, YUV_420_888, NV21,
 }
 
+@Suppress("DEPRECATION")
 class ImageAnalysisBuilder private constructor(
     private val format: OutputImageFormat,
     private val width: Int,

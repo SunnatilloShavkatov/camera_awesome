@@ -11,6 +11,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media.VolumeProviderCompat
 
 
+@Suppress("DEPRECATION")
 class PlayerService : Service() {
     private var mediaSession: MediaSessionCompat? = null
     private var messenger: Messenger? = null

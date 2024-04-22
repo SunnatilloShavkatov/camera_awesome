@@ -54,6 +54,7 @@ enum class CaptureModes {
     PHOTO, VIDEO, PREVIEW, ANALYSIS_ONLY,
 }
 
+@Suppress("DEPRECATION")
 class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
     private lateinit var physicalButtonHandler: PhysicalButtonsHandler
     private var binding: FlutterPluginBinding? = null
@@ -536,7 +537,7 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
             countDownTimer.start()
 
             cameraState.recordings!![index].stop()
-            lastRecordedVideoSubscriptions!!.add(lastRecordedVideos!![index].subscribe({ it ->
+            lastRecordedVideoSubscriptions!!.add(lastRecordedVideos!![index].subscribe({
                 countDownTimer.cancel()
                 if (!submitted) {
                     submitted = true
