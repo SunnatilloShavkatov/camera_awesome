@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "dart:io";
 
 import "package:camera_app/utils/file_utils.dart";
@@ -17,7 +19,7 @@ class CameraAwesomeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const MaterialApp(
-      title: "camerAwesome",
+      title: "Camera Awesome",
       home: CameraPage(),
     );
 }
