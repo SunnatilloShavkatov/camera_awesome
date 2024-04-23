@@ -25,7 +25,7 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.camera_app"
     compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
+    ndkVersion '26.2.11394342'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -63,9 +63,7 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.google.mlkit:face-detection:16.1.5'
+    implementation 'com.google.mlkit:face-detection:16.1.6'
     implementation 'com.google.mlkit:vision-common:17.3.0'
-
-
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 }
