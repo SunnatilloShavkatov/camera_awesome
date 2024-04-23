@@ -24,79 +24,12 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def DEFAULT_COMPILE_SDK_VERSION = 34
-def DEFAULT_MIN_SDK_VERSION = 21
-def DEFAULT_MEDIA_VERSION = "1.7.0"
-
-static def getMajor(versionTab) {
-    versionTab == null ? null : versionTab[0].split("\\-")[0]
-}
-
-static def getMinor(versionTab) {
-    versionTab == null ? null : versionTab.length > 1 ? versionTab[1].split("\\-")[0] : null
-}
-
-static def getPatch(versionTab) {
-    versionTab == null ? null : versionTab.length > 2 ? versionTab[2].split("\\-")[0] : null
-}
-
-static def isWithinRange(value, min, max) {
-    if (value == null && min == null && max == null) {
-        return true
-    } else if (value == null) {
-        return false
-    }
-    if (min != null && max != null) {
-        return (min..max).contains(value)
-    } else if (min != null) {
-        return value >= min
-    } else if (max != null) {
-        return value <= max
-    } else {
-        return true
-    }
-}
-
-static def isVersionInRange(version, min, max) {
-    if (version == null) {
-        return false
-    }
-    def tabVersion = version.toString().split("\\.")
-    def tabMin = min == null ? null : min.toString().split("\\.")
-    def tabMax = max == null ? null : max.toString().split("\\.")
-
-    return isWithinRange(getMajor(tabVersion), getMajor(tabMin), getMajor(tabMax))
-            && isWithinRange(getMinor(tabVersion), getMinor(tabMin), getMinor(tabMax))
-            && isWithinRange(getPatch(tabVersion), getPatch(tabMin), getPatch(tabMax))
-}
-
-def compatibleVersion(prop, fallbackVersion, min = null, max = null) {
-    if (rootProject.ext.has(prop) && isVersionInRange(rootProject.ext.get(prop), min, max)) {
-        return rootProject.ext.get(prop)
-    } else {
-        if (rootProject.ext.has(prop)) {
-            println("************************** CameraAwesome **************************")
-            println("${prop} ${rootProject.ext.get(prop)} is not compatible with the plugin.")
-            if (min != null && max != null) {
-                println("Please use a version between ${min} and ${max}.")
-            } else if (min != null) {
-                println("Please use a version >= ${min}.")
-            } else if (max != null) {
-                println("Please use a version <= ${max}.")
-            }
-            println("Using fallback version ${fallbackVersion}.")
-            println("******************************************************************")
-        }
-        return fallbackVersion
-    }
-}
-
 android {
-    compileSdk compatibleVersion('compileSdk', DEFAULT_COMPILE_SDK_VERSION).toInteger()
+    compileSdk 34
     namespace 'com.apparence.camera_awesome'
 
     defaultConfig {
-        minSdkVersion compatibleVersion('minSdkVersion', DEFAULT_MIN_SDK_VERSION, 21).toInteger()
+        minSdkVersion 21
     }
 
     lintOptions {
@@ -144,8 +77,8 @@ dependencies {
 
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
-    def compatMediaVersion = compatibleVersion('compatMediaVersion', DEFAULT_MEDIA_VERSION)
-    implementation "androidx.media:media:${compatMediaVersion}"
+    ///
+    implementation "androidx.media:media:1.7.0"
 
     implementation 'com.google.guava:guava:31.0.1-jre'
 }
