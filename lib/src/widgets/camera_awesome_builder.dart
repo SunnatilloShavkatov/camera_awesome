@@ -162,29 +162,29 @@ class CameraAwesomeBuilder extends StatefulWidget {
   /// If you want to do image analysis (for AI for instance), you can set the
   /// [imageAnaysisConfig] and listen to the stream of images with
   /// [onImageForAnalysis].
-  CameraAwesomeBuilder.awesome(
-      {SensorConfig? sensorConfig,
-      bool enablePhysicalButton = false,
-      Widget? progressIndicator,
-      required SaveConfig saveConfig,
-      Function(MediaCapture)? onMediaTap,
-      OnImageForAnalysis? onImageForAnalysis,
-      AnalysisConfig? imageAnalysisConfig,
-      OnPreviewTap Function(CameraState)? onPreviewTapBuilder,
-      OnPreviewScale Function(CameraState)? onPreviewScaleBuilder,
-      CameraPreviewFit? previewFit,
-      CameraLayoutBuilder? previewDecoratorBuilder,
-      AwesomeTheme? theme,
-      Widget Function(CameraState state)? topActionsBuilder,
-      Widget Function(CameraState state)? bottomActionsBuilder,
-      Widget Function(CameraState state)? middleContentBuilder,
-      EdgeInsets previewPadding = EdgeInsets.zero,
-      Alignment previewAlignment = Alignment.center,
-      PictureInPictureConfigBuilder? pictureInPictureConfigBuilder,
-      AwesomeFilter? defaultFilter,
-      List<AwesomeFilter>? availableFilters,
-      OnMediaCaptureEvent? onMediaCaptureEvent})
-      : this._(
+  CameraAwesomeBuilder.awesome({
+    SensorConfig? sensorConfig,
+    bool enablePhysicalButton = false,
+    Widget? progressIndicator,
+    required SaveConfig saveConfig,
+    Function(MediaCapture)? onMediaTap,
+    OnImageForAnalysis? onImageForAnalysis,
+    AnalysisConfig? imageAnalysisConfig,
+    OnPreviewTap Function(CameraState)? onPreviewTapBuilder,
+    OnPreviewScale Function(CameraState)? onPreviewScaleBuilder,
+    CameraPreviewFit? previewFit,
+    CameraLayoutBuilder? previewDecoratorBuilder,
+    AwesomeTheme? theme,
+    Widget Function(CameraState state)? topActionsBuilder,
+    Widget Function(CameraState state)? bottomActionsBuilder,
+    Widget Function(CameraState state)? middleContentBuilder,
+    EdgeInsets previewPadding = EdgeInsets.zero,
+    Alignment previewAlignment = Alignment.center,
+    PictureInPictureConfigBuilder? pictureInPictureConfigBuilder,
+    AwesomeFilter? defaultFilter,
+    List<AwesomeFilter>? availableFilters,
+    OnMediaCaptureEvent? onMediaCaptureEvent,
+  }) : this._(
           sensorConfig: sensorConfig ??
               SensorConfig.single(
                 sensor: Sensor.position(SensorPosition.back),

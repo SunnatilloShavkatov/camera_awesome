@@ -1,7 +1,6 @@
 import 'package:camera_awesome/src/orchestrator/states/states.dart';
 import 'package:camera_awesome/src/widgets/buttons/awesome_aspect_ratio_button.dart';
 import 'package:camera_awesome/src/widgets/buttons/awesome_flash_button.dart';
-import 'package:camera_awesome/src/widgets/buttons/awesome_location_button.dart';
 import 'package:flutter/material.dart';
 
 class AwesomeTopActions extends StatelessWidget {
@@ -23,8 +22,6 @@ class AwesomeTopActions extends StatelessWidget {
                     AwesomeFlashButton(state: state),
                     if (state is PhotoCameraState)
                       AwesomeAspectRatioButton(state: state),
-                    if (state is PhotoCameraState)
-                      AwesomeLocationButton(state: state),
                   ]);
 
   @override

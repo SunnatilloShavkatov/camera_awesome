@@ -15,7 +15,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.apparence.camera_awesome.CamerawesomePlugin
+import com.apparence.camera_awesome.CameraAwesomePlugin
 import com.apparence.camera_awesome.models.FlashMode
 import com.apparence.camera_awesome.sensors.SensorOrientation
 import com.apparence.camera_awesome.utils.isMultiCamSupported
@@ -245,7 +245,7 @@ data class CameraXState(
             if (addAnalysisUseCase) {
                 if (currentCaptureMode == CaptureModes.VIDEO && cameraLevel < CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_3) {
                     Log.w(
-                        CamerawesomePlugin.TAG,
+                        CameraAwesomePlugin.TAG,
                         "Trying to bind too many use cases for this device (level $cameraLevel), ignoring image analysis"
                     )
                 } else {
