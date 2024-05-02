@@ -1,11 +1,13 @@
+// ignore_for_file: discarded_futures
+
 import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:video_player/video_player.dart";
 
 class MiniVideoPlayer extends StatefulWidget {
-
   const MiniVideoPlayer({super.key, required this.filePath});
+
   final String filePath;
 
   @override
@@ -18,10 +20,12 @@ class _MiniVideoPlayer extends State<MiniVideoPlayer> {
   @override
   void initState() {
     _controller = VideoPlayerController.file(File(widget.filePath))
-      ..initialize().then((value) => setState(() {
-            _controller?.setLooping(true);
-            _controller?.play();
-          }),);
+      ..initialize().then(
+        (_) => setState(() {
+          _controller?.setLooping(true);
+          _controller?.play();
+        }),
+      );
     super.initState();
   }
 

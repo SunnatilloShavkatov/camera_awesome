@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "package:camera_awesome/camerawesome_plugin.dart";
 import "package:flutter/material.dart";
 
@@ -10,9 +12,9 @@ class CameraAwesomeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const MaterialApp(
-      title: "Camera Analysis Capabilities",
-      home: CameraPage(),
-    );
+        title: "Camera Analysis Capabilities",
+        home: CameraPage(),
+      );
 }
 
 class CameraPage extends StatelessWidget {
@@ -43,29 +45,31 @@ class CameraPage extends StatelessWidget {
             sensor: sensor,
           ),
           previewDecoratorBuilder: (CameraState state, _) => Center(
-              child: FutureBuilder<bool>(
-                  future: CameraCharacteristics
-                      .isVideoRecordingAndImageAnalysisSupported(
-                          sensor.position!,),
-                  builder: (_, AsyncSnapshot<bool> snapshot) {
-                    debugPrint("___---___--- received result ${snapshot.data}");
-                    if (snapshot.data == null) {
-                      return const CircularProgressIndicator();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text(
-                        'Video recording AND image analysis at the same time ${snapshot.data! ? 'IS' : 'IS NOT'} supported on ${sensor.position?.name} sensor',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          backgroundColor: Colors.black54,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  },),
+            child: FutureBuilder<bool>(
+              future: CameraCharacteristics
+                  .isVideoRecordingAndImageAnalysisSupported(
+                sensor.position!,
+              ),
+              builder: (_, AsyncSnapshot<bool> snapshot) {
+                debugPrint("___---___--- received result ${snapshot.data}");
+                if (snapshot.data == null) {
+                  return const CircularProgressIndicator();
+                }
+                return Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    'Video recording AND image analysis at the same time ${snapshot.data! ? 'IS' : 'IS NOT'} supported on ${sensor.position?.name} sensor',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      backgroundColor: Colors.black54,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              },
             ),
+          ),
         ),
       ),
     );

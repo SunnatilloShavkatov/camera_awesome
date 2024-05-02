@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "dart:async";
 import "dart:io";
 import "dart:math";
@@ -263,41 +265,25 @@ class _MyPreviewDecoratorWidgetState extends State<_MyPreviewDecoratorWidget> {
                           );
                         },
                       ),
-                      bgra8888: (Bgra8888Image image) {
-                        // _currentJpeg = _applyFilterOnImage(
-                        //   imglib.Image.fromBytes(
-                        //     width: image.width,
-                        //     height: image.height,
-                        //     bytes: image.planes[0].bytes.buffer,
-                        //     order: imglib.ChannelOrder.bgra,
-                        //   ),
-                        // );
-
-                        return FutureBuilder<JpegImage>(
-                          future: image.toJpeg(),
-                          builder: (_, AsyncSnapshot<JpegImage> snapshot) {
-                            if (snapshot.data == null && _currentJpeg == null) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else if (snapshot.data != null) {
-                              _currentJpeg =
-                                  _applyFilterOnBytes(snapshot.data!.bytes);
-                            }
-                            return ImageAnalysisPreview(
-                              currentJpeg: _currentJpeg!,
-                              width: image.width.toDouble(),
-                              height: image.height.toDouble(),
+                      bgra8888: (Bgra8888Image image) =>
+                          FutureBuilder<JpegImage>(
+                        future: image.toJpeg(),
+                        builder: (_, AsyncSnapshot<JpegImage> snapshot) {
+                          if (snapshot.data == null && _currentJpeg == null) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
                             );
-                          },
-                        );
-
-                        // return ImageAnalysisPreview(
-                        //   currentJpeg: _currentJpeg!,
-                        //   width: image.width.toDouble(),
-                        //   height: image.height.toDouble(),
-                        // );
-                      },
+                          } else if (snapshot.data != null) {
+                            _currentJpeg =
+                                _applyFilterOnBytes(snapshot.data!.bytes);
+                          }
+                          return ImageAnalysisPreview(
+                            currentJpeg: _currentJpeg!,
+                            width: image.width.toDouble(),
+                            height: image.height.toDouble(),
+                          );
+                        },
+                      ),
                     ) ??
                     const ColoredBox(
                       color: Colors.red,

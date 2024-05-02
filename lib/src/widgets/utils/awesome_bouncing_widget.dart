@@ -53,18 +53,21 @@ class _AwesomeBouncingWidgetState extends State<AwesomeBouncingWidget>
   Widget build(BuildContext context) {
     _scale = 1 - _controller!.value;
 
-    return IgnorePointer(
-      ignoring: widget.onTap == null,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 200),
-        opacity: (widget.onTap != null) ? 1.0 : widget.disabledOpacity,
-        child: GestureDetector(
-          onTapDown: _onTapDown,
-          onTapUp: _onTapUp,
-          onTapCancel: _onTapCancel,
-          child: Transform.scale(
-            scale: _scale,
-            child: widget.child,
+    return Padding(
+      padding: EdgeInsets.all(0.5),
+      child: IgnorePointer(
+        ignoring: widget.onTap == null,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: (widget.onTap != null) ? 1.0 : widget.disabledOpacity,
+          child: GestureDetector(
+            onTapDown: _onTapDown,
+            onTapUp: _onTapUp,
+            onTapCancel: _onTapCancel,
+            child: Transform.scale(
+              scale: _scale,
+              child: widget.child,
+            ),
           ),
         ),
       ),

@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "dart:math";
 
 import "package:camera_awesome/camerawesome_plugin.dart";
@@ -10,8 +12,8 @@ class CustomUiExample2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      body: CameraAwesomeBuilder.custom(
-        builder: (CameraState cameraState, Preview preview) => Stack(
+        body: CameraAwesomeBuilder.custom(
+          builder: (CameraState cameraState, Preview preview) => Stack(
             children: <Widget>[
               const Positioned.fill(
                 child: Align(
@@ -50,29 +52,36 @@ class CustomUiExample2 extends StatelessWidget {
               ),
             ],
           ),
-        saveConfig: SaveConfig.photo(),
-        onPreviewTapBuilder: (CameraState state) => OnPreviewTap(
-          onTap: (Offset position, PreviewSize flutterPreviewSize,
-              PreviewSize pixelPreviewSize,) {
-            state.when(onPhotoMode: (PhotoCameraState picState) => picState.takePhoto());
-          },
-          onTapPainter: (Offset tapPosition) => TweenAnimationBuilder(
-            key: ValueKey(tapPosition),
-            tween: Tween<double>(begin: 1, end: 0),
-            duration: const Duration(milliseconds: 500),
-            builder: (BuildContext context, double anim, Widget? child) => Transform.rotate(
+          saveConfig: SaveConfig.photo(),
+          onPreviewTapBuilder: (CameraState state) => OnPreviewTap(
+            onTap: (
+              Offset position,
+              PreviewSize flutterPreviewSize,
+              PreviewSize pixelPreviewSize,
+            ) {
+              state.when(
+                onPhotoMode: (PhotoCameraState picState) =>
+                    picState.takePhoto(),
+              );
+            },
+            onTapPainter: (Offset tapPosition) => TweenAnimationBuilder<double>(
+              key: ValueKey<Offset>(tapPosition),
+              tween: Tween<double>(begin: 1, end: 0),
+              duration: const Duration(milliseconds: 500),
+              builder: (BuildContext context, double anim, Widget? child) =>
+                  Transform.rotate(
                 angle: anim * 2 * pi,
                 child: Transform.scale(
                   scale: 4 * anim,
                   child: child,
                 ),
               ),
-            child: const Icon(
-              Icons.camera,
-              color: Colors.white,
+              child: const Icon(
+                Icons.camera,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
 }

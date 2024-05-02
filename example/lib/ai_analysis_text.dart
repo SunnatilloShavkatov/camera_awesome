@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "dart:async";
 
 import "package:camera_app/utils/mlkit_utils.dart";
@@ -14,12 +16,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-      title: "camerAwesome App",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
+        title: "camerAwesome App",
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const MyHomePage(),
+      );
 }
 
 class MyHomePage extends StatefulWidget {
@@ -40,20 +42,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      body: CameraAwesomeBuilder.previewOnly(
-        onImageForAnalysis: _processImageBarcode,
-        imageAnalysisConfig: AnalysisConfig(
-          androidOptions: const AndroidAnalysisOptions.nv21(
-            width: 1024,
+        body: CameraAwesomeBuilder.previewOnly(
+          onImageForAnalysis: _processImageBarcode,
+          imageAnalysisConfig: AnalysisConfig(
+            androidOptions: const AndroidAnalysisOptions.nv21(width: 1024),
+            maxFramesPerSecond: 5,
+            autoStart: false,
           ),
-          maxFramesPerSecond: 5,
-          autoStart: false,
+          builder: (_, __) => const SizedBox.shrink(),
         ),
-        builder: (CameraState cameraModeState, Preview preview) => Container(),
-      ),
-    );
+      );
 
-  Future _processImageBarcode(AnalysisImage img) async {
+  Future<void> _processImageBarcode(AnalysisImage img) async {
     final InputImage inputImage = img.toInputImage();
     final RecognizedText recognizedText = await _textRecognizer //
         .processImage(inputImage);

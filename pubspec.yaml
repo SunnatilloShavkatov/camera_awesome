@@ -3,7 +3,7 @@ description:
   Easiest Flutter camera Plugin with builtin UI. Supporting capturing images,
   streaming images, video recording, switch sensors, autofocus, flash, filters... on
   Android and iOS.
-version: 2.0.2
+version: 2.0.3
 homepage: https://Apparence.io
 repository: https://github.com/Apparence-io/camera_awesome
 
@@ -12,7 +12,6 @@ environment:
   flutter: ">=3.19.0"
 
 dependencies:
-  carousel_slider: ^4.2.1
   collection: ^1.18.0
   cross_file: ^0.3.4+1
   flutter:
@@ -33,8 +32,6 @@ flutter:
     - assets/icons/1_1.png
     - assets/icons/16_9.png
     - assets/icons/4_3.png
-    - assets/icons/expanded.png
-    - assets/icons/minimized.png
 
   plugin:
     platforms:

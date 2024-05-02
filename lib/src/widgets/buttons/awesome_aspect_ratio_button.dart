@@ -27,17 +27,20 @@ class AwesomeAspectRatioButton extends StatelessWidget {
                 case CameraAspectRatios.ratio_16_9:
                   width = 32;
                   icon = const AssetImage(
-                      "packages/camerawesome/assets/icons/16_9.png");
+                    "packages/camera_awesome/assets/icons/16_9.png",
+                  );
                   break;
                 case CameraAspectRatios.ratio_4_3:
                   width = 24;
                   icon = const AssetImage(
-                      "packages/camerawesome/assets/icons/4_3.png");
+                    "packages/camera_awesome/assets/icons/4_3.png",
+                  );
                   break;
                 case CameraAspectRatios.ratio_1_1:
                   width = 24;
                   icon = const AssetImage(
-                      "packages/camerawesome/assets/icons/1_1.png");
+                    "packages/camera_awesome/assets/icons/1_1.png",
+                  );
                   break;
               }
 
