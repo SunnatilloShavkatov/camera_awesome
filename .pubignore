@@ -11,8 +11,8 @@ test/out/
 test_lab.sh
 firebase_key.txt
 google-services.json
-/.github
-/.run
 /.vscode
+/.run
+/.github
 pubspec.lock
-/example/
+/example
