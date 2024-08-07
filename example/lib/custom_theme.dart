@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "package:camera_app/utils/file_utils.dart";
 import "package:camera_awesome/camerawesome_plugin.dart";
 import "package:flutter/material.dart";

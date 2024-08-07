@@ -1,5 +1,4 @@
 import 'package:camera_awesome/camerawesome_plugin.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,7 +23,9 @@ class AwesomeFilterSelector extends StatefulWidget {
 }
 
 class _AwesomeFilterSelectorState extends State<AwesomeFilterSelector> {
-  final CarouselController _controller = CarouselController();
+  late final CarouselController _controller = CarouselController(
+    initialItem: _selected,
+  );
   int? _textureId;
   int _selected = 0;
 
@@ -53,33 +54,44 @@ class _AwesomeFilterSelectorState extends State<AwesomeFilterSelector> {
         color: widget.filterListBackgroundColor,
         child: Stack(
           children: [
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 60.0,
-                initialPage: _selected,
-                onPageChanged: (index, reason) {
-                  final filter = awesomePresetFiltersList[index];
+            CarouselView(
+              itemExtent: 60,
+              onTap: (index) {
+                final filter = awesomePresetFiltersList[index];
 
-                  setState(() {
-                    _selected = index;
-                  });
+                setState(() {
+                  _selected = index;
+                });
 
-                  HapticFeedback.selectionClick();
-                  widget.state.setFilter(filter);
-                },
-                enableInfiniteScroll: false,
-                viewportFraction: 0.165,
-              ),
-              carouselController: _controller,
-              items: awesomePresetFiltersList.map((filter) {
+                HapticFeedback.selectionClick();
+                widget.state.setFilter(filter);
+              },
+              // options: CarouselOptions(
+              //   height: 60.0,
+              //   initialPage: _selected,
+              //   onPageChanged: (index, reason) {
+              //     final filter = awesomePresetFiltersList[index];
+              //
+              //     setState(() {
+              //       _selected = index;
+              //     });
+              //
+              //     HapticFeedback.selectionClick();
+              //     widget.state.setFilter(filter);
+              //   },
+              //   enableInfiniteScroll: false,
+              //   viewportFraction: 0.165,
+              // ),
+              controller: _controller,
+              children: awesomePresetFiltersList.map((filter) {
                 return Builder(
                   builder: (BuildContext context) {
                     return AwesomeBouncingWidget(
                       onTap: () {
-                        _controller.animateToPage(
-                          presetsIds.indexOf(filter.id),
-                          curve: Curves.fastLinearToSlowEaseIn,
-                          duration: const Duration(milliseconds: 700),
+                        _controller.jumpTo(
+                          presetsIds.indexOf(filter.id).toDouble(),
+                          // curve: Curves.fastLinearToSlowEaseIn,
+                          // duration: const Duration(milliseconds: 700),
                         );
                       },
                       child: _FilterPreview(

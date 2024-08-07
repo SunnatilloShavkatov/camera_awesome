@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "dart:async";
 
 import "package:camera_app/utils/file_utils.dart";
@@ -46,7 +48,8 @@ class _CameraPageState extends State<CameraPage> {
           previewFit: CameraPreviewFit.fitWidth,
           onMediaTap: (MediaCapture mediaCapture) {
             mediaCapture.captureRequest.when(
-                single: (SingleCaptureRequest single) => single.file?.open(),);
+              single: (SingleCaptureRequest single) => single.file?.open(),
+            );
           },
           previewDecoratorBuilder: (CameraState state, Preview preview) =>
               BarcodePreviewOverlay(

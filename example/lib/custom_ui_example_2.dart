@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import "dart:math";
 
 import "package:camera_awesome/camerawesome_plugin.dart";

@@ -41,7 +41,7 @@ class CameraPage extends StatefulWidget {
 class _CameraPageState extends State<CameraPage> {
   final BehaviorSubject<FaceDetectionModel> _faceDetectionController =
       BehaviorSubject<FaceDetectionModel>();
-  Preview? _preview;
+  late Preview? _preview;
 
   final FaceDetectorOptions options = FaceDetectorOptions(
     enableContours: true,
@@ -87,7 +87,7 @@ class _CameraPageState extends State<CameraPage> {
         ),
       );
 
-  Future _analyzeImage(AnalysisImage img) async {
+  Future<void> _analyzeImage(AnalysisImage img) async {
     final InputImage inputImage = img.toInputImage();
 
     try {
@@ -120,7 +120,7 @@ class _MyPreviewDecoratorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IgnorePointer(
-        child: StreamBuilder(
+        child: StreamBuilder<SensorConfig>(
           stream: cameraState.sensorConfig$,
           builder: (_, AsyncSnapshot<SensorConfig> snapshot) {
             if (!snapshot.hasData) {

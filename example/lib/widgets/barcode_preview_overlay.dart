@@ -1,4 +1,4 @@
-// ignore_for_file: cascade_invocations
+// ignore_for_file: cascade_invocations, discarded_futures
 
 import "dart:math";
 
@@ -128,7 +128,7 @@ class _BarcodePreviewOverlayState extends State<BarcodePreviewOverlay> {
 
   /// Detects if one of the [barcodes] is in the [_scanArea] and updates UI
   /// accordingly.
-  Future _detectBarcodeInArea(AnalysisImage img, List<Barcode> barcodes) async {
+  Future<void> _detectBarcodeInArea(AnalysisImage img, List<Barcode> barcodes) async {
     try {
       String? barcodeRead;
       _barcodeInArea = null;

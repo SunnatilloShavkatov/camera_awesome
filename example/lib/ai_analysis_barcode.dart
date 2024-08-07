@@ -17,12 +17,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-      title: "camerAwesome App",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
+        title: "camerAwesome App",
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const MyHomePage(),
+      );
 }
 
 class MyHomePage extends StatefulWidget {
@@ -33,10 +33,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final BarcodeScanner _barcodeScanner = BarcodeScanner(formats: <BarcodeFormat>[BarcodeFormat.all]);
+  final BarcodeScanner _barcodeScanner = BarcodeScanner(
+    formats: <BarcodeFormat>[BarcodeFormat.all],
+  );
 
   final List<String> _buffer = <String>[];
-  final BehaviorSubject<List<String>> _barcodesController = BehaviorSubject<List<String>>();
+  final BehaviorSubject<List<String>> _barcodesController =
+      BehaviorSubject<List<String>>();
   late final Stream<List<String>> _barcodesStream = _barcodesController.stream;
   final ScrollController _scrollController = ScrollController();
 
@@ -48,28 +51,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      body: CameraAwesomeBuilder.previewOnly(
-        onImageForAnalysis: _processImageBarcode,
-        imageAnalysisConfig: AnalysisConfig(
-          androidOptions: const AndroidAnalysisOptions.nv21(
-            width: 1024,
+        body: CameraAwesomeBuilder.previewOnly(
+          onImageForAnalysis: _processImageBarcode,
+          imageAnalysisConfig: AnalysisConfig(
+            androidOptions: const AndroidAnalysisOptions.nv21(
+              width: 1024,
+            ),
+            maxFramesPerSecond: 5,
+            autoStart: false,
           ),
-          maxFramesPerSecond: 5,
-          autoStart: false,
-        ),
-        builder: (CameraState cameraModeState, Preview preview) => _BarcodeDisplayWidget(
+          builder: (CameraState cameraModeState, Preview preview) =>
+              _BarcodeDisplayWidget(
             barcodesStream: _barcodesStream,
             scrollController: _scrollController,
             analysisController: cameraModeState.analysisController!,
           ),
-      ),
-    );
+        ),
+      );
 
-  Future _processImageBarcode(AnalysisImage img) async {
+  Future<void> _processImageBarcode(AnalysisImage img) async {
     final InputImage inputImage = img.toInputImage();
 
     try {
-      final List<Barcode> recognizedBarCodes = await _barcodeScanner.processImage(inputImage);
+      final List<Barcode> recognizedBarCodes =
+          await _barcodeScanner.processImage(inputImage);
       for (final Barcode barcode in recognizedBarCodes) {
         debugPrint("Barcode: [${barcode.format}]: ${barcode.rawValue}");
         _addBarcode("[${barcode.format.name}]: ${barcode.rawValue}");
@@ -100,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class _BarcodeDisplayWidget extends StatefulWidget {
-
   const _BarcodeDisplayWidget({
     // ignore: unused_element
     super.key,
@@ -108,6 +112,7 @@ class _BarcodeDisplayWidget extends StatefulWidget {
     required this.scrollController,
     required this.analysisController,
   });
+
   final Stream<List<String>> barcodesStream;
   final ScrollController scrollController;
 
@@ -120,48 +125,57 @@ class _BarcodeDisplayWidget extends StatefulWidget {
 class _BarcodeDisplayWidgetState extends State<_BarcodeDisplayWidget> {
   @override
   Widget build(BuildContext context) => Align(
-      alignment: Alignment.bottomCenter,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.tealAccent.withOpacity(0.7),
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          Material(
-            color: Colors.transparent,
-            child: CheckboxListTile(
-              value: widget.analysisController.enabled,
-              onChanged: (bool? newValue) async {
-                if (widget.analysisController.enabled) {
-                  await widget.analysisController.stop();
-                } else {
-                  await widget.analysisController.start();
-                }
-                setState(() {});
-              },
-              title: const Text(
-                "Enable barcode scan",
-                style: TextStyle(fontWeight: FontWeight.bold),
+        alignment: Alignment.bottomCenter,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.tealAccent.withOpacity(0.7),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Material(
+                color: Colors.transparent,
+                child: CheckboxListTile(
+                  value: widget.analysisController.enabled,
+                  onChanged: (bool? newValue) async {
+                    if (widget.analysisController.enabled) {
+                      await widget.analysisController.stop();
+                    } else {
+                      await widget.analysisController.start();
+                    }
+                    setState(() {});
+                  },
+                  title: const Text(
+                    "Enable barcode scan",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
-            ),
+              Container(
+                height: 120,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: StreamBuilder<List<String>>(
+                  stream: widget.barcodesStream,
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<List<String>> value,
+                  ) =>
+                      !value.hasData
+                          ? const SizedBox.expand()
+                          : ListView.separated(
+                              padding: const EdgeInsets.only(top: 8),
+                              controller: widget.scrollController,
+                              itemCount: value.data!.length,
+                              separatorBuilder:
+                                  (BuildContext context, int index) =>
+                                      const SizedBox(height: 4),
+                              itemBuilder: (BuildContext context, int index) =>
+                                  Text(value.data![index]),
+                            ),
+                ),
+              ),
+            ],
           ),
-          Container(
-            height: 120,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: StreamBuilder<List<String>>(
-              stream: widget.barcodesStream,
-              builder: (BuildContext context, AsyncSnapshot<List<String>> value) => !value.hasData
-                  ? const SizedBox.expand()
-                  : ListView.separated(
-                      padding: const EdgeInsets.only(top: 8),
-                      controller: widget.scrollController,
-                      itemCount: value.data!.length,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const SizedBox(height: 4),
-                      itemBuilder: (BuildContext context, int index) => Text(value.data![index]),
-                    ),
-            ),
-          ),
-        ],),
-      ),
-    );
+        ),
+      );
 }
